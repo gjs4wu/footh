@@ -7,11 +7,14 @@
 //
 
 import React from "react"
-import { Image, StyleSheet, Text, View, ScrollView } from "react-native"
+import { Image, StyleSheet, Text, View, ScrollView, Button, TextInput } from "react-native"
 
 
 export default class Home extends React.Component {
 
+
+
+	
 	static navigationOptions = ({ navigation }) => {
 	
 		const { params = {} } = navigation.state
@@ -36,32 +39,36 @@ export default class Home extends React.Component {
 				style={styles.homeView}>
 				<View
 					style={styles.searchgroupView}>
-					<View
-						style={styles.rectangleView}/>
+
+					<TextInput
+							style={styles.rectangleView}
+							//onChangeText={onChangeText0}
+							//value={title0}
+						/>
 					<View
 						style={{
 							flex: 1,
 						}}/>
-					<Image
+					
+					<Button title = "Search!"/>
+					{/* <Image
 						source={require("./../../assets/images/-icon-olor-2.png")}
-						style={styles.iconСolorImage}/>
+						style={styles.iconСolorImage}/> */}
 				</View>
 				
 				<ScrollView horizontal>
 					<View
 						style={styles.topnavbarView}>
-						<Text
-							style={styles.foodText}>French</Text>
-						<Text
-							style={styles.foodText}>Mexico</Text>
-						<View
-							style={{
-								flex: 1,
-							}}/>
-						<Text
-							style={styles.foodText}>Russian</Text>
-						<Text
-							style={styles.foodText}>German</Text>
+						<Button title = "French"/>
+						<Button title = "Mexican"/>
+						<Button title = "German"/>
+						<Button title = "Russian"/>
+						<Button title = "Korean"/>
+						<Button title = "Chinese"/>
+						<Button title = "Italian"/>
+						<Button title = "Japanese"/>
+						
+				
 					</View>
 				</ScrollView>
 				
@@ -75,40 +82,36 @@ export default class Home extends React.Component {
 							alignSelf: "center",
 							justifyContent: "center",
 							left: 0,
-							right: 2,
-							top: 0,
-							bottom: 0,
+							right: 0,
+							marginTop: 0,
+							marginBottom: 20
 						}}>
 						<View
-							style={styles.rectangle4View}>
+							style={styles.rectangle2View}>
 							<Text
-								style={styles.textTwoText}>Details{"\n"}Kompot is a fruit juice made by nearly every Russian and Ukrainian family. There are a gazillion ways to make it. It all depends on the fruit you have on hand. </Text>
+								style={styles.textFourText}>Kompot Drink{"\n"}Kompot is a fruit juice made by nearly every Russian and Ukrainian family. There are a gazillion ways to make it. It all depends on the fruit you have on hand. </Text>
 						</View>
-						<View
-							style={{
-								flex: 1,
-							}}/>
 						<View
 							style={styles.rectangle2View}>
 							<Text
 								style={styles.textFourText}>Apple Strudel{"\n"}Apple Strudel is a traditional pastry from the Austro-Hungarian Empire. The name is German, and the dish was made famous by the Viennese. </Text>
 						</View>
-					</View>
-					<View
-						pointerEvents="box-none"
-						style={{
-							position: "absolute",
-							left: 0,
-							right: 0,
-							top: 0,
-							bottom: 0,
-							justifyContent: "center",
-						}}>
 						<View
-							style={styles.rectangle3View}>
+							style={styles.rectangle2View}>
 							<Text
-								style={styles.textThreeText}>正文{"\n"}茄子wdnmd 可乐鸡汤法力无边 A1高闪来一个好不好秋梨膏 我起了一枪秒了 发把狙</Text>
+								style={styles.textFourText}>Kung Pao chicken{"\n"}Kung pao chicken is a popular Chinese restaurant dish of stir-fried chicken, peanuts and vegetables. It’s traditionally made with specialty ingredients, like Sichuan peppercorns, Chinese black vinegar, Chinese rice wine, and whole dried red chilies. </Text>
 						</View>
+						<View
+							style={styles.rectangle2View}>
+							<Text
+								style={styles.textFourText}>Kebab{"\n"}These kebabs start with the most flavorful marinade mixture made with richly flavored ingredients like Worcestershire, soy sauce and bright red wine vinegar. And of course a generous amount of marinating time really allows the flavors to soak right into the beef and also help tenderize it. </Text>
+						</View>
+						<View
+							style={styles.rectangle2View}>
+							<Text
+								style={styles.textFourText}>California roll{"\n"}A California roll or California maki is a makizushi sushi roll that is usually rolled inside-out, and containing cucumber, crab or imitation crab, and avocado. Sometimes crab salad is substituted for the crab stick, and often the outer layer of rice in an inside-out roll (uramaki) is sprinkled with toasted sesame seeds or roe such as tobiko from flying fish. </Text>
+						</View>
+
 					</View>
 				</View>
 			    </ScrollView>
@@ -253,8 +256,9 @@ const styles = StyleSheet.create({
 	topnavbarView: {
 		backgroundColor: "transparent",
 		width: 500,
-		height: 35,
-		marginTop: 25,
+		height: 40,
+		marginTop: 2,
+		marginRight: 130,
 		flexDirection: "row",
 		alignItems: "center",
 	},
@@ -298,7 +302,8 @@ const styles = StyleSheet.create({
 		backgroundColor: "transparent",
 		width: 365,
 		height: 491,
-		marginTop: 96,
+		marginTop: 20,
+		marginBottom: 360
 	},
 	rectangle4View: {
 		backgroundColor: "white",
@@ -329,6 +334,8 @@ const styles = StyleSheet.create({
 		shadowOpacity: 1,
 		height: 147,
 		marginRight: 2,
+		marginBottom: -10,
+		marginTop: 30,
 		justifyContent: "center",
 		alignItems: "center",
 	},
