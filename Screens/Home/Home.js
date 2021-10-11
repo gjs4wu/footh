@@ -8,32 +8,15 @@
 
 import React from "react"
 import { Image, StyleSheet, Text, View, ScrollView, Button, TextInput } from "react-native"
+import * as firebase from 'firebase'
+
+export default function Home(){
+	const [text, onChangeText] = React.useState("Enlighten us with your recipe :)");
 
 
-export default class Home extends React.Component {
-
-
-
-	
-	static navigationOptions = ({ navigation }) => {
-	
-		const { params = {} } = navigation.state
-		return {
-				header: null,
-				headerLeft: null,
-				headerRight: null,
-			}
-	}
-
-	constructor(props) {
-		super(props)
-	}
-
-	componentDidMount() {
+	function componentDidMount() {
 	
 	}
-
-	render() {
 	
 		return <View
 				style={styles.homeView}>
@@ -221,7 +204,6 @@ export default class Home extends React.Component {
 					</View> */}
 				</View>
 			</View>
-	}
 }
 
 const styles = StyleSheet.create({
