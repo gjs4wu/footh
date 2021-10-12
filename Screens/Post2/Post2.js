@@ -14,9 +14,6 @@ import 'firebase/firestore';
 
 
 
-  
-
-
 
 export default function Post2(){
 	const [text, onChangeText] = React.useState("Enlighten us with your recipe :)");
@@ -33,15 +30,28 @@ export default function Post2(){
 		const uniqueSet = new Set(foodarray);
 		const backtoarray = [...uniqueSet];
 		
-		dbh.collection("allrecipe").doc("users").collection(userID).doc(categoryinput).set({
+		dbh.collection("allrecipe").doc("users").collection("placeholder").doc(categoryinput).set({
 			recipe0: textinput,
 			upvotes:0,
 			ingredients: backtoarray,
-			favs:0
+			favs:0,
+			author:userID
 		}).catch(error=>console.log(error))
 	}
 	
-
+	function searchCenter(categorysearch){
+		let characterRef = dbh.collection('allrecipe').doc('users').collection("placeholder").doc(categorysearch);
+		let marioDoc = characterRef.get()
+		.then(doc => {
+			if (!doc.exists) {
+			console.log('No such document!');
+			} else {
+			console.log('Document data:', doc.data());
+			}
+		}).catch(err => {
+			console.log('Error getting document', err);
+		})
+	}
 
 	
 	

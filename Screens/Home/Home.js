@@ -6,17 +6,16 @@
 //  Copyright © 2018 [Company]. All rights reserved.
 //
 
+
 import React from "react"
 import { Image, StyleSheet, Text, View, ScrollView, Button, TextInput } from "react-native"
 import * as firebase from 'firebase'
+import Post2 from '/Users/liuling/MobileAppProject/Footh/Screens/Post2/Post2.js'
+import searchCenter from '/Users/liuling/MobileAppProject/Footh/Screens/Post2/Post2.js'
+
 
 export default function Home(){
-	const [text, onChangeText] = React.useState("Enlighten us with your recipe :)");
-
-
-	function componentDidMount() {
-	
-	}
+	const [categorysearchinput, onChangeText77] = React.useState("Search with German/Russian etc");
 	
 		return <View
 				style={styles.homeView}>
@@ -25,15 +24,15 @@ export default function Home(){
 
 					<TextInput
 							style={styles.rectangleView}
-							//onChangeText={onChangeText0}
-							//value={title0}
+							onChangeText={onChangeText77}
+							value={categorysearchinput}
 						/>
 					<View
 						style={{
 							flex: 1,
 						}}/>
-					
-					<Button title = "Search!"/>
+			
+					<Button title = "Search!" onPress={()=>{searchCenter(categorysearchinput)}}/> 
 					{/* <Image
 						source={require("./../../assets/images/-icon-olor-2.png")}
 						style={styles.iconСolorImage}/> */}
