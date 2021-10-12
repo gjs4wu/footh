@@ -9,6 +9,14 @@
 import React from "react"
 import { Home, Image, StyleSheet, Text, View, ScrollView , TextInput, Button, Pressable} from "react-native"
 import * as firebase from 'firebase'
+import { collection, addDoc } from "firebase/firestore";
+import 'firebase/firestore';
+
+
+
+  
+
+
 
 export default function Post2(){
 	const [text, onChangeText] = React.useState("Enlighten us with your recipe :)");
@@ -16,12 +24,29 @@ export default function Post2(){
 
 	var categoryinput = "sus";
 	var foodarray = [];
+	
+
+	var dbh = firebase.firestore();
+	
+
+	function test0(userID,textinput,categoryinput,foodarray) {
+		const uniqueSet = new Set(foodarray);
+		const backtoarray = [...uniqueSet];
+		
+		dbh.collection("allrecipe").doc("users").collection(userID).doc(categoryinput).set({
+			recipe0: textinput,
+			upvotes:0,
+			ingredients: backtoarray,
+			favs:0
+		}).catch(error=>console.log(error))
+	}
+	
 
 
+	
+	
+	
 	function storeRecipe(userID,textinput,categoryinput,foodarray) {
-		
-		
-		
 		const uniqueSet = new Set(foodarray);
 		const backtoarray = [...uniqueSet];
 		
@@ -33,9 +58,7 @@ export default function Post2(){
 				ingredients: backtoarray,
 				favs:0
 			}
-		).catch(error=>console.log(error))
-
-		
+		).catch(error=>console.log(error))		
 	}
 	
 		return <View
@@ -99,6 +122,8 @@ export default function Post2(){
 							flex: 1,
 						}}/>
 				    <ScrollView horizontal>
+					
+					
 					<View
 						style={styles.tagView}>
 						<Button title = "German" onPress = {()=>{categoryinput="German"}}/>
@@ -326,7 +351,7 @@ export default function Post2(){
 					}}/>
 				<View
 					style={styles.postView}>
-					<Button title = "Publish" onPress={()=>{storeRecipe(title0, text, categoryinput, foodarray)}}/>
+					<Button title = "Publish" onPress={()=>{test0(title0, text, categoryinput, foodarray)}}/>
 				</View>
 			</View>
 	
