@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import Home from "./Screens/Home/Home";
 import Post1 from "./Screens/Post1/Post1";
 import NewRecipe from "./Screens/NewRecipe/NewRecipe";
@@ -14,16 +13,15 @@ import * as Font from "expo-font";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
-import "@firebase/storage";
+import * as fb from "firebase";
+const firebase = fb.default;
 
 // Your web app's Firebase configuration
-const firebaseConfig = require("./db/credentials.json");
+const firebaseCredentials = require("./db/credentials.json");
 
 // Initialize Firebase
 if (!firebase.apps.length) {
-  const firebaseApp = firebase.initializeApp(firebaseConfig);
+  const firebaseApp = firebase.initializeApp(firebaseCredentials);
 }
 
 const Stack = createNativeStackNavigator();
@@ -81,7 +79,11 @@ function Tabs() {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={({ navigation }) => ({})}
+      />
       <Tab.Screen name="Search" component={Search} />
       <Tab.Screen name="New Recipe" component={NewRecipe} />
       <Tab.Screen name="Post1" component={Post1} />
@@ -132,16 +134,3 @@ export default class App extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrollView: {
-    backgroundColor: "green",
-    marginHorizontal: 20,
-  },
-});

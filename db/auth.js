@@ -1,6 +1,5 @@
-import firebase from "firebase";
-require("firebase/auth");
-require("firebase/firestore");
+import * as fb from "firebase";
+const firebase = fb.default;
 import { Alert } from "react-native";
 
 export async function registration(email, password, displayName) {

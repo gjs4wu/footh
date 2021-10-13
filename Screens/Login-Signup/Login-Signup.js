@@ -2,7 +2,6 @@ import React from "react";
 import screenSize from "../../constants/layout";
 
 import {
-  Button,
   Image,
   StyleSheet,
   Text,

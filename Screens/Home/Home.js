@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import screenSize from "../../constants/layout";
-import uuid from "react-native-uuid";
-import getRecipes from "../../db/recipes";
-import getImage from "../../db/images";
+import { getRecipes } from "../../db/recipes";
+import { getImage } from "../../db/images";
+import AppLoading from "expo-app-loading";
 
 import {
   FlatList,
@@ -13,130 +13,90 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function Home({ navigation }) {
-  const [selectedId, setSelectedId] = useState(null);
-  recipes();
-  const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
-    const color = item.id === selectedId ? "white" : "black";
-
-    return (
-      <Item
-        item={item}
-        onPress={() => setSelectedId(item.id)}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color }}
-        image={item.source}
-        favorited={item.favorited}
-      />
-    );
+export default class Home extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
+    return {
+      header: null,
+      headerLeft: null,
+      headerRight: null,
+    };
   };
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        extraData={selectedId}
-        numColumns={2}
-      />
-    </View>
-  );
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedId: null,
+      dataLoaded: false,
+      data: [],
+    };
+  }
+
+  componentDidMount() {
+    this.getRecipes();
+  }
+
+  async getRecipes() {
+    var recipeData = await recipes();
+    this.setState({ dataLoaded: true, data: recipeData });
+  }
+
+  render() {
+    if (!this.state.dataLoaded) {
+      return (
+        <AppLoading
+          startAsync={this.getRecipes()}
+          onFinish={() => {
+            this.state.dataLoaded = true;
+          }}
+          onError={() => {}}
+        />
+      );
+    }
+    const renderItem = ({ item }) => {
+      return (
+        <Item
+          item={item}
+          onPress={() => {
+            this.state.selectedId = item.id;
+          }}
+          image={item.imageUrl}
+        />
+      );
+    };
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={this.state.data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={this.state.selectedId}
+          numColumns={2}
+        />
+      </View>
+    );
+  }
 }
 
-const Item = ({ item, onPress, image, favorited }) => {
+const Item = ({ item, onPress, image }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.item]}>
-      <Image
-        style={[
-          styles.thumbnail,
-          favorited ? styles.favorited : styles.notFavorited,
-        ]}
-        source={image}
-      ></Image>
+      <Image style={[styles.thumbnail]} source={{ uri: image }}></Image>
     </TouchableOpacity>
   );
 };
 
 async function recipes() {
   var recs = await getRecipes();
-  var url = await getImage(recs[0].imagePath);
-  console.log(url);
+  var recipesDone = await Promise.all(
+    recs.map(async function (recipe) {
+      var url = await getImage(recipe.imagePath);
+      recipe.imageUrl = url;
+      return recipe;
+    })
+  );
+  return recipesDone;
 }
-
-const DATA = [
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-1.png"),
-    favorited: true,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-2.png"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-3.png"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-4.png"),
-    favorited: true,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-5.png"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-6.png"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-7.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-8.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-9.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-10.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-11.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-12.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-13.jpg"),
-    favorited: false,
-  },
-  {
-    id: uuid.v4(),
-    source: require("./../../assets/images/image-14.jpg"),
-    favorited: false,
-  },
-];
 
 const styles = StyleSheet.create({
   container: {
@@ -147,21 +107,10 @@ const styles = StyleSheet.create({
   item: {
     padding: "4%",
   },
-  title: {
-    fontSize: 32,
-  },
   thumbnail: {
     resizeMode: "cover",
     width: screenSize.window.width * 0.4,
     height: screenSize.window.width * 0.4,
     borderRadius: 20,
-  },
-  favorited: {
-    borderColor: "#ff8c2b",
-    borderWidth: 3,
-  },
-  notFavorited: {
-    borderColor: "black",
-    borderWidth: 3,
   },
 });

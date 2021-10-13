@@ -4,8 +4,6 @@ import { signIn } from "../../db/auth";
 import { useState } from "react";
 
 import {
-  Button,
-  Image,
   StyleSheet,
   Text,
   View,
