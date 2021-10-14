@@ -3,7 +3,9 @@ import * as fb from "firebase";
 const firebase = fb.default;
 
 export async function getImage(imagePath) {
-  var imageRef = firebase.storage().refFromURL("gs://foodbooth-d0313.appspot.com/images/" + imagePath);
+  var imageRef = firebase
+    .storage()
+    .refFromURL("gs://foodbooth-d0313.appspot.com/images/" + imagePath);
   var url = await imageRef.getDownloadURL();
   return url;
 }
@@ -23,7 +25,9 @@ export async function uploadImage(uri) {
     xhr.send(null);
   });
 
-  const ref = firebase.storage().refFromURL("gs://foodbooth-d0313.appspot.com/images/" + uuid.v4());
+  const ref = firebase
+    .storage()
+    .refFromURL("gs://foodbooth-d0313.appspot.com/images/" + uuid.v4());
   const snapshot = await ref.put(blob);
 
   // We're done with the blob, close and release it

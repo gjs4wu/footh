@@ -1,23 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Home,
-  Image,
   StyleSheet,
   Text,
   View,
   ScrollView,
   TextInput,
   Button,
-  Pressable,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  TouchableHighlight,
 } from "react-native";
-import firebase from "firebase";
-require("firebase/firestore");
+import "react-native-get-random-values";
+import layout from "../../constants/layout";
+import { nanoid } from "nanoid";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import * as ImagePicker from "expo-image-picker";
+import SearchableDropdown from "react-native-searchable-dropdown";
+import * as fb from "firebase";
+const firebase = fb.default;
+
+const titles = [
+  "Easy Sugar Cookies",
+  "Chocolate Chip Cookies",
+  "Baked Feta Pasta",
+  "Honey Glazed Salmon",
+  "Shrimp Fried Rice",
+  "Cauliflower Pasta",
+  "Chicken Fajitas",
+  "Penne Vodka",
+  "Cilantro Lime Chicken",
+  "Pumpkin Curry",
+  "Shrimp Scampi",
+  "Mushroom Pasta",
+  "Butter Chicken",
+  "Chicken Quesadillas",
+  "Tomato Soup",
+  "Fettuccine Alfredo",
+  "Pork Dumplings",
+  "Beef Stroganoff",
+  "Caprese Chicken",
+  "Chicken Meatballs",
+  "Beef Tenderloin",
+  "Cajun Butter Steak",
+  "Chicken Chow Mein",
+];
 
 export default function NewRecipe() {
-  const [text, onChangeText] = React.useState(
-    "Enlighten us with your recipe :)"
+  const [tagKey, setTagKey] = useState(Math.random());
+  const [image, setImage] = useState(null);
+  const [title, onChangeTitle] = useState(null);
+  const [ingredient, onAddIngredient] = useState(null);
+  const [directions, onChangeDirections] = useState(null);
+  const [currentIngredients, setCurrentIngredients] = useState([]);
+  const [randomNum, setRandom] = useState(
+    Math.floor(Math.random() * titles.length)
   );
-  const [title0, onChangeText0] = React.useState("Name yer title :)"); //this for title
+  const [tags, setTags] = useState([
+    { tag: "Vegetarian", selected: false, id: "1" },
+    { tag: "Vegan", selected: false, id: "2" },
+    { tag: "Kosher", selected: false, id: "3" },
+    { tag: "Halal", selected: false, id: "4" },
+    { tag: "Italian", selected: false, id: "5" },
+    { tag: "Korean", selected: false, id: "6" },
+    { tag: "Chinese", selected: false, id: "7" },
+    { tag: "Greek", selected: false, id: "8" },
+    { tag: "French", selected: false, id: "9" },
+    { tag: "Chinese", selected: false, id: "10" },
+    { tag: "Japanese", selected: false, id: "11" },
+    { tag: "Mexican", selected: false, id: "12" },
+    { tag: "Breakfast", selected: false, id: "13" },
+    { tag: "Lunch", selected: false, id: "14" },
+    { tag: "Dinner", selected: false, id: "15" },
+    { tag: "Dessert", selected: false, id: "16" },
+  ]);
 
   var categoryinput = "sus";
   var foodarray = [];
@@ -80,503 +136,286 @@ export default function NewRecipe() {
       .catch((error) => console.log(error));
   }
 
-  return (
-    <View style={styles.post2View}>
-      <Image
-        source={require("./../../assets/images/-icon-olor.png")}
-        style={styles.iconСolorImage}
-      />
-      <View style={styles.titlegroupView}>
-        <Text style={styles.titleText}>Title</Text>
-        <View
-          style={{
-            flex: 1,
-          }}
-        />
-
-        <TextInput
-          style={styles.rectangleView}
-          onChangeText={onChangeText0}
-          value={title0}
-        />
-      </View>
-
-      <View style={styles.taggroupView}>
-        <Text style={styles.tagText}>Tags</Text>
-        <View
-          pointerEvents="box-none"
-          style={{
-            alignSelf: "stretch",
-            width: 1,
-            marginLeft: 10,
-            marginTop: 4,
-            alignItems: "flex-start",
-          }}
-        >
-          {/* <View
-							pointerEvents="box-none"
-							style={{
-								width: 68,
-								height: 28,
-							}}>
-							<View
-								style={styles.tagFourView}>
-								
-								<View
-									style={styles.postView}>
-									<Button title = "Russian"/>
-								</View>
-								
-							</View>
-							<View
-								style={styles.tagFiveView}>
-								<Text
-									style={styles.xxxSixText}>Korean{"\n"}</Text>
-							</View>
-						</View> */}
-        </View>
-        <View
-          style={{
-            flex: 1,
-          }}
-        />
-        <ScrollView horizontal>
-          <View style={styles.tagView}>
-            <Button
-              title="German"
-              onPress={() => {
-                categoryinput = "German";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Italian"
-              onPress={() => {
-                categoryinput = "Italian";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Russian"
-              onPress={() => {
-                categoryinput = "Russian";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Korean"
-              onPress={() => {
-                categoryinput = "Korean";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="French"
-              onPress={() => {
-                categoryinput = "French";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Japanese"
-              onPress={() => {
-                categoryinput = "Japanese";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Chinese"
-              onPress={() => {
-                categoryinput = "Chinese";
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Spanish"
-              onPress={() => {
-                categoryinput = "Spanish";
-              }}
-            />
-          </View>
-        </ScrollView>
-      </View>
-      <View style={styles.taggroupView}>
-        <Text style={styles.tagText}>Item</Text>
-        <View
-          pointerEvents="box-none"
-          style={{
-            alignSelf: "stretch",
-            width: 1,
-            marginLeft: 10,
-            marginTop: 4,
-            alignItems: "flex-start",
-          }}
-        >
-          {/* <View
-							pointerEvents="box-none"
-							style={{
-								width: 68,
-								height: 28,
-							}}>
-							<View
-								style={styles.tagFourView}>
-								
-								<View
-									style={styles.postView}>
-									<Button title = "Russian"/>
-								</View>
-								
-							</View>
-							<View
-								style={styles.tagFiveView}>
-								<Text
-									style={styles.xxxSixText}>Korean{"\n"}</Text>
-							</View>
-						</View> */}
-        </View>
-        <View
-          style={{
-            flex: 1,
-          }}
-        />
-        <ScrollView horizontal>
-          <View style={styles.tagView}>
-            <Button
-              title="Sugar"
-              onPress={() => {
-                foodarray.push("Sugar");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Beef"
-              onPress={() => {
-                foodarray.push("Beef");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Carrot"
-              onPress={() => {
-                foodarray.push("Carrot");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Egg"
-              onPress={() => {
-                foodarray.push("Egg");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Milk"
-              onPress={() => {
-                foodarray.push("Milk");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Cheese"
-              onPress={() => {
-                foodarray.push("Cheese");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Tomato"
-              onPress={() => {
-                foodarray.push("Tomato");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Salt"
-              onPress={() => {
-                foodarray.push("Salt");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Flour"
-              onPress={() => {
-                foodarray.push("Flour");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Mutton"
-              onPress={() => {
-                foodarray.push("Mutton");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Butter"
-              onPress={() => {
-                foodarray.push("Butter");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Cabbage"
-              onPress={() => {
-                foodarray.push("Cabbage");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Salmon"
-              onPress={() => {
-                foodarray.push("Salmon");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Onion"
-              onPress={() => {
-                foodarray.push("Onion");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Apple"
-              onPress={() => {
-                foodarray.push("Apple");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Cherry"
-              onPress={() => {
-                foodarray.push("Cherry");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Orange"
-              onPress={() => {
-                foodarray.push("Orange");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Strawberry"
-              onPress={() => {
-                foodarray.push("Strawberry");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Chicken"
-              onPress={() => {
-                foodarray.push("Chicken");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Blueberry"
-              onPress={() => {
-                foodarray.push("Blueberry");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Lemon"
-              onPress={() => {
-                foodarray.push("Lemon");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Garlic"
-              onPress={() => {
-                foodarray.push("Garlic");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Shrimp"
-              onPress={() => {
-                foodarray.push("Shrimp");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Clam"
-              onPress={() => {
-                foodarray.push("Clam");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Potato"
-              onPress={() => {
-                foodarray.push("Potato");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Catfish"
-              onPress={() => {
-                foodarray.push("Catfish");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Tuna"
-              onPress={() => {
-                foodarray.push("Tuna");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Lobster"
-              onPress={() => {
-                foodarray.push("Lobster");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Turkey"
-              onPress={() => {
-                foodarray.push("Turkey");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Eggplant"
-              onPress={() => {
-                foodarray.push("Eggplant");
-              }}
-            />
-          </View>
-          <View style={styles.tagView}>
-            <Button
-              title="Cream"
-              onPress={() => {
-                foodarray.push("Cream");
-              }}
-            />
-          </View>
-        </ScrollView>
-      </View>
-
-      <View style={styles.contentgroupView}>
-        <Text style={styles.contentText}>Main Text</Text>
-        <View style={styles.contenttextView}>
-          <ScrollView>
-            <TextInput
-              style={styles.xxxText}
-              onChangeText={onChangeText}
-              value={text}
-            />
-          </ScrollView>
-        </View>
-      </View>
-      <View
-        style={{
-          flex: 1,
-        }}
-      />
-      <View style={styles.postView}>
+  function renderCurrentIngredient({ item }) {
+    return (
+      <View style={styles.listIngredient}>
         <Button
-          title="Publish"
+          title={item.ingredient}
           onPress={() => {
-            test0(title0, text, categoryinput, foodarray);
+            var newCurrent = currentIngredients.filter((ing) => ing !== item);
+            setCurrentIngredients(newCurrent);
           }}
         />
       </View>
+    );
+  }
+
+  function renderTag({ item }) {
+    var objIndex = tags.findIndex((e) => {
+      return e.tag == item.tag;
+    });
+    return (
+      <View>
+        <TouchableHighlight
+          key={tagKey}
+          style={
+            tags[objIndex].selected ? styles.listTagPressed : styles.listTag
+          }
+          onPress={() => {
+            var currentTags = tags;
+
+            currentTags[objIndex].selected = currentTags[objIndex].selected
+              ? false
+              : true;
+            setTags(currentTags);
+            setTagKey(Math.random());
+          }}
+          underlayColor={"#007AFF"}
+        >
+          <Text
+            style={
+              tags[objIndex].selected
+                ? styles.tagButtonTextPressed
+                : styles.tagButtonText
+            }
+          >
+            {item.tag}
+          </Text>
+        </TouchableHighlight>
+      </View>
+    );
+  }
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  return (
+    <View style={styles.screen}>
+      <ScrollView>
+        <View style={styles.titlegroupView}>
+          <Text style={styles.titleText}>Recipe Title</Text>
+
+          <TextInput
+            style={styles.titleField}
+            onChangeText={onChangeTitle}
+            value={title}
+            placeholder={titles[randomNum]}
+          />
+        </View>
+        <View style={styles.imagePicker}>
+          <TouchableOpacity onPress={pickImage}>
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  resizeMode: "contain",
+                }}
+              />
+            )}
+            {!image && (
+              <Image
+                style={{
+                  height: "100%",
+                  resizeMode: "contain",
+                  alignSelf: "center",
+                }}
+                source={require("./../../assets/images/upload-image.png")}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.ingredientsGroupView}>
+          <Text style={styles.ingredientsText}>Add Ingredient</Text>
+          <View style={styles.addIngredientsGroup}>
+            <TextInput
+              style={styles.addIngredientsField}
+              onChangeText={onAddIngredient}
+              value={ingredient}
+              placeholder="2 cups of white rice"
+            />
+            <TouchableOpacity
+              onPress={() => {
+                var current = currentIngredients;
+                var id = nanoid(12);
+                current.push({ ingredient, id });
+                setCurrentIngredients(current);
+                onAddIngredient(null);
+              }}
+              style={styles.addIngredientButton}
+            >
+              <Ionicons
+                name={"add-circle"}
+                color={"black"}
+                size={45}
+              ></Ionicons>
+            </TouchableOpacity>
+          </View>
+          {currentIngredients.length != 0 && (
+            <View style={styles.listIngredients}>
+              <Text style={styles.listIngredientsText}>
+                Ingredients (tap to remove ingredient)
+              </Text>
+              <FlatList
+                style={{ marginLeft: "10%" }}
+                horizontal={true}
+                data={currentIngredients}
+                keyExtractor={(item) => item.id}
+                renderItem={renderCurrentIngredient}
+              />
+            </View>
+          )}
+        </View>
+
+        <View style={styles.directionsGroup}>
+          <Text style={styles.directionsText}>Recipe Directions</Text>
+          <View style={styles.directionsField}>
+            <TextInput
+              multiline
+              style={styles.directionsFieldText}
+              onChangeText={onChangeDirections}
+              value={directions}
+              placeholder={"Write your recipe!"}
+            />
+          </View>
+        </View>
+
+        <View style={styles.taggroupView}>
+          <Text style={styles.tagsText}>Tags</Text>
+          <FlatList
+            horizontal={true}
+            data={tags}
+            keyExtractor={(item) => item.id}
+            renderItem={renderTag}
+          />
+        </View>
+
+        <View style={styles.postView}>
+          <TouchableOpacity
+            onPress={() => {
+              // test0(title, text, categoryinput, foodarray);
+            }}
+          >
+            <Text style={styles.postText}>Publish</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  post2View: {
+  screen: {
     backgroundColor: "rgb(249, 250, 250)",
-    flex: 1,
-    alignItems: "flex-start",
-  },
-  iconСolorImage: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    width: 29,
-    height: 26,
-    marginLeft: 34,
-    marginTop: 60,
   },
   titlegroupView: {
-    backgroundColor: "transparent",
-    width: 301,
-    height: 33,
-    marginLeft: 34,
-    marginTop: 26,
-    marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
+    width: "100%",
+    marginTop: "5%",
+    marginBottom: "5%",
   },
   titleText: {
-    color: "rgb(30, 30, 30)",
     fontSize: 24,
-    fontStyle: "normal",
-    fontWeight: "normal",
+    marginLeft: "10%",
+    fontFamily: ".Basic",
     textAlign: "left",
-    backgroundColor: "transparent",
   },
-  rectangleView: {
+  titleField: {
+    fontSize: 32,
+    padding: 10,
     backgroundColor: "white",
-    borderRadius: 14,
+    borderRadius: 10,
     shadowColor: "rgba(79, 98, 192, 0.15)",
     shadowRadius: 20,
     shadowOpacity: 1,
-    width: 220,
-    height: 29,
+    width: "85%",
+    minHeight: "8%",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    alignSelf: "center",
+  },
+  ingredientsGroupView: {
+    width: "100%",
+    marginTop: "5%",
+    marginBottom: "5%",
+  },
+  ingredientsText: {
+    fontSize: 20,
+    marginLeft: "10%",
+    fontFamily: ".Basic",
+    textAlign: "left",
+  },
+  addIngredientsGroup: {
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  addIngredientsField: {
+    fontSize: 30,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "rgba(79, 98, 192, 0.15)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    width: "70%",
+    minHeight: "8%",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+  },
+  addIngredientButton: {
+    marginLeft: "3%",
+    alignContent: "center",
+    justifyContent: "center",
+    minHeight: "5%",
+    minWidth: "5%",
+  },
+  listIngredient: {
+    backgroundColor: "white",
+    borderRadius: 3,
+    shadowColor: "rgba(0, 0, 0, 0.05)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    height: 40,
+    marginRight: 5,
+    marginTop: 1,
+    justifyContent: "flex-end",
+    fontSize: 6,
+  },
+  listIngredientsText: {
+    fontSize: 20,
+    marginLeft: "10%",
+    fontFamily: ".Basic",
+    textAlign: "left",
+  },
+  listIngredients: {
+    marginTop: "5%",
   },
   taggroupView: {
-    backgroundColor: "transparent",
+    width: "85%",
     alignSelf: "center",
-    width: 345,
-    height: 60,
-    marginTop: 0,
-    marginBottom: 0,
-    flexDirection: "row",
-    alignItems: "flex-start",
+    height: "10%",
   },
   tagText: {
     backgroundColor: "transparent",
@@ -586,185 +425,77 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     textAlign: "left",
   },
-  tagFourView: {
+  tagsText: {
+    fontSize: 20,
+    marginLeft: "3%",
+    fontFamily: ".Basic",
+    textAlign: "left",
+  },
+  directionsGroup: {
+    alignItems: "flex-start",
+  },
+  directionsText: {
+    fontSize: 20,
+    marginLeft: "10%",
+    fontFamily: ".Basic",
+    textAlign: "left",
+  },
+  directionsField: {
     backgroundColor: "white",
-    borderRadius: 13,
+    borderRadius: 10,
     shadowColor: "rgba(0, 0, 0, 0.05)",
     shadowRadius: 20,
     shadowOpacity: 1,
-    position: "absolute",
-    left: 4,
-    width: 64,
-    top: 2,
-    height: 26,
-    justifyContent: "flex-end",
+    alignSelf: "center",
+    width: "85%",
+    minHeight: "20%",
+    maxHeight: "50%",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
-  xxxFiveText: {
+  directionsFieldText: {
     color: "rgb(30, 30, 30)",
-    fontSize: 6,
+    padding: 10,
+    fontSize: 18,
     fontStyle: "normal",
     fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
+    textAlign: "left",
+    lineHeight: 26,
     backgroundColor: "transparent",
-    marginLeft: 17,
-    marginRight: 18,
   },
-  tagFiveView: {
+  listTag: {
     backgroundColor: "white",
-    borderRadius: 13,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    position: "absolute",
-    left: 0,
-    width: 64,
-    top: 0,
-    height: 26,
-    justifyContent: "flex-end",
-  },
-  xxxSixText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 6,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    marginLeft: 17,
-    marginRight: 18,
-  },
-  tagTwoView: {
-    backgroundColor: "white",
-    borderRadius: 13,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    width: 64,
-    height: 26,
-    marginLeft: 4,
-    justifyContent: "flex-end",
-  },
-  xxxThreeText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 6,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    marginLeft: 17,
-    marginRight: 18,
-  },
-  tagView: {
-    backgroundColor: "white",
+    justifyContent: "center",
     borderRadius: 3,
     shadowColor: "rgba(0, 0, 0, 0.05)",
     shadowRadius: 20,
     shadowOpacity: 1,
-    width: 100,
     height: 40,
     marginRight: 5,
     marginTop: 1,
-    justifyContent: "flex-end",
-    fontSize: 6,
+    padding: 5,
   },
-  xxxTwoText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 6,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    marginLeft: 17,
-    marginRight: 18,
-  },
-  tagThreeView: {
-    backgroundColor: "white",
-    borderRadius: 13,
+  listTagPressed: {
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    borderRadius: 3,
     shadowColor: "rgba(0, 0, 0, 0.05)",
     shadowRadius: 20,
     shadowOpacity: 1,
-    width: 64,
-    height: 26,
-    marginRight: 31,
-    marginTop: 6,
-    justifyContent: "flex-end",
+    height: 40,
+    marginRight: 5,
+    marginTop: 1,
+    padding: 5,
   },
-  xxxFourText: {
-    color: "rgb(30, 30, 30)",
-    fontSize: 6,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    backgroundColor: "transparent",
-    marginLeft: 17,
-    marginRight: 18,
+  tagButtonText: {
+    color: "#007AFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
-  addtagView: {
-    backgroundColor: "white",
-    borderRadius: 13,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    width: 34,
-    height: 26,
-    marginTop: 6,
-    justifyContent: "flex-end",
-  },
-  textText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    marginLeft: 12,
-    marginRight: 12,
-  },
-  contentgroupView: {
-    backgroundColor: "transparent",
-    width: 334,
-    height: 280,
-    marginLeft: 34,
-    marginTop: 10,
-    alignItems: "flex-start",
-  },
-  contentText: {
-    color: "rgb(30, 30, 30)",
-    fontSize: 24,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-    backgroundColor: "transparent",
-  },
-  contenttextView: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    alignSelf: "flex-end",
-    width: 286,
-    height: 229,
-    marginTop: 18,
-    alignItems: "flex-start",
-  },
-  xxxText: {
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    width: 200,
-    height: 400,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-    lineHeight: 25,
-    backgroundColor: "transparent",
-    marginLeft: 48,
-    marginTop: 21,
+  tagButtonTextPressed: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   postView: {
     backgroundColor: "white",
@@ -772,11 +503,10 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(0, 0, 0, 0.05)",
     shadowRadius: 20,
     shadowOpacity: 1,
-    alignSelf: "flex-end",
-    width: 115,
-    height: 52,
-    marginRight: 145,
-    marginBottom: 163,
+    alignSelf: "center",
+    width: "30%",
+    height: "6%",
+    marginBottom: "50%",
     justifyContent: "center",
   },
   generalbutton: {
@@ -789,15 +519,16 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   postText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 10,
-    fontStyle: "normal",
-    fontWeight: "normal",
+    color: "#007AFF",
+    fontSize: 30,
+    fontWeight: "bold",
     textAlign: "center",
     lineHeight: 25,
     paddingTop: 5,
-    marginLeft: 36,
-    marginRight: 36,
+  },
+  imagePicker: {
+    height: layout.window.height * 0.3,
+    marginBottom: "5%",
+    marginTop: "5%",
   },
 });
