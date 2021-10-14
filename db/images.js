@@ -25,13 +25,15 @@ export async function uploadImage(uri) {
     xhr.send(null);
   });
 
+  var uid =uuid.v4()
+
   const ref = firebase
     .storage()
-    .refFromURL("gs://foodbooth-d0313.appspot.com/images/" + uuid.v4());
+    .refFromURL("gs://foodbooth-d0313.appspot.com/images/" + uid);
   const snapshot = await ref.put(blob);
 
   // We're done with the blob, close and release it
   blob.close();
 
-  return await snapshot.ref.getDownloadURL();
+  return uid;
 }

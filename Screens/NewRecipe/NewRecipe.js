@@ -10,41 +10,17 @@ import {
   Image,
   FlatList,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 import "react-native-get-random-values";
 import layout from "../../constants/layout";
+import initData from "../../constants/recipeData";
 import { nanoid } from "nanoid";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
-import SearchableDropdown from "react-native-searchable-dropdown";
-import * as fb from "firebase";
-const firebase = fb.default;
-
-const titles = [
-  "Easy Sugar Cookies",
-  "Chocolate Chip Cookies",
-  "Baked Feta Pasta",
-  "Honey Glazed Salmon",
-  "Shrimp Fried Rice",
-  "Cauliflower Pasta",
-  "Chicken Fajitas",
-  "Penne Vodka",
-  "Cilantro Lime Chicken",
-  "Pumpkin Curry",
-  "Shrimp Scampi",
-  "Mushroom Pasta",
-  "Butter Chicken",
-  "Chicken Quesadillas",
-  "Tomato Soup",
-  "Fettuccine Alfredo",
-  "Pork Dumplings",
-  "Beef Stroganoff",
-  "Caprese Chicken",
-  "Chicken Meatballs",
-  "Beef Tenderloin",
-  "Cajun Butter Steak",
-  "Chicken Chow Mein",
-];
+import { uploadImage } from "../../db/images";
+import { uploadRecipe } from "../../db/recipes";
+const titles = initData.titlesList;
 
 export default function NewRecipe() {
   const [tagKey, setTagKey] = useState(Math.random());
@@ -56,84 +32,17 @@ export default function NewRecipe() {
   const [randomNum, setRandom] = useState(
     Math.floor(Math.random() * titles.length)
   );
-  const [tags, setTags] = useState([
-    { tag: "Vegetarian", selected: false, id: "1" },
-    { tag: "Vegan", selected: false, id: "2" },
-    { tag: "Kosher", selected: false, id: "3" },
-    { tag: "Halal", selected: false, id: "4" },
-    { tag: "Italian", selected: false, id: "5" },
-    { tag: "Korean", selected: false, id: "6" },
-    { tag: "Chinese", selected: false, id: "7" },
-    { tag: "Greek", selected: false, id: "8" },
-    { tag: "French", selected: false, id: "9" },
-    { tag: "Chinese", selected: false, id: "10" },
-    { tag: "Japanese", selected: false, id: "11" },
-    { tag: "Mexican", selected: false, id: "12" },
-    { tag: "Breakfast", selected: false, id: "13" },
-    { tag: "Lunch", selected: false, id: "14" },
-    { tag: "Dinner", selected: false, id: "15" },
-    { tag: "Dessert", selected: false, id: "16" },
-  ]);
+  const [tags, setTags] = useState(initData.tagsList);
 
-  var categoryinput = "sus";
-  var foodarray = [];
-
-  var dbh = firebase.firestore();
-
-  function test0(userID, textinput, categoryinput, foodarray) {
-    const uniqueSet = new Set(foodarray);
-    const backtoarray = [...uniqueSet];
-
-    dbh
-      .collection("allrecipe")
-      .doc("users")
-      .collection("placeholder")
-      .doc(categoryinput)
-      .set({
-        recipe0: textinput,
-        upvotes: 0,
-        ingredients: backtoarray,
-        favs: 0,
-        author: userID,
-      })
-      .catch((error) => console.log(error));
-  }
-
-  function searchCenter(categorysearch) {
-    let characterRef = dbh
-      .collection("allrecipe")
-      .doc("users")
-      .collection("placeholder")
-      .doc(categorysearch);
-    let marioDoc = characterRef
-      .get()
-      .then((doc) => {
-        if (!doc.exists) {
-          console.log("No such document!");
-        } else {
-          console.log("Document data:", doc.data());
-        }
-      })
-      .catch((err) => {
-        console.log("Error getting document", err);
-      });
-  }
-
-  function storeRecipe(userID, textinput, categoryinput, foodarray) {
-    const uniqueSet = new Set(foodarray);
-    const backtoarray = [...uniqueSet];
-
-    firebase
-      .database()
-      .ref("users/" + userID)
-      .set({
-        recipe0: textinput,
-        category0: categoryinput,
-        upvotes: 0,
-        ingredients: backtoarray,
-        favs: 0,
-      })
-      .catch((error) => console.log(error));
+  function resetState() {
+    setTagKey(Math.random());
+    setImage(null);
+    onChangeTitle(null);
+    onAddIngredient(null);
+    onChangeDirections(null);
+    setCurrentIngredients([]);
+    setRandom(Math.floor(Math.random() * titles.length));
+    setTags(initData.tagsList);
   }
 
   function renderCurrentIngredient({ item }) {
@@ -315,8 +224,18 @@ export default function NewRecipe() {
 
         <View style={styles.postView}>
           <TouchableOpacity
-            onPress={() => {
-              // test0(title, text, categoryinput, foodarray);
+            onPress={async () => {
+              console.log(image);
+              var imagePath = image ? await uploadImage(image) : null;
+              uploadRecipe(
+                title,
+                imagePath,
+                currentIngredients,
+                directions,
+                tags
+              );
+              resetState();
+              Alert.alert("Recipe Created!")
             }}
           >
             <Text style={styles.postText}>Publish</Text>
@@ -417,14 +336,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     height: "10%",
   },
-  tagText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 24,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-  },
   tagsText: {
     fontSize: 20,
     marginLeft: "3%",
@@ -509,22 +420,12 @@ const styles = StyleSheet.create({
     marginBottom: "50%",
     justifyContent: "center",
   },
-  generalbutton: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "black",
-  },
   postText: {
     color: "#007AFF",
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 25,
-    paddingTop: 5,
+    lineHeight: 40,
   },
   imagePicker: {
     height: layout.window.height * 0.3,
