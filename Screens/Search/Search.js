@@ -84,7 +84,7 @@ export default class Search extends React.Component {
               }}
             />
             <Image
-              source={require("./../../assets/images/-icon-olor-2.png")}
+              source={require("./../../assets/images/-icon-olor-2@2x.png")}
               style={styles.iconСolorImage}
             />
           </View>
