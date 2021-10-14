@@ -105,12 +105,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   item: {
-    padding: "4%",
+    padding: "3%",
   },
   thumbnail: {
     resizeMode: "cover",
     width: screenSize.window.width * 0.4,
     height: screenSize.window.width * 0.4,
-    borderRadius: 20,
+    borderRadius: 10,
   },
 });
