@@ -1,99 +1,150 @@
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-// import firestore from "@react-native-firebase/firestore";
+import { useState, useEffect } from "react";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  Image,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  Text,
+  View,
+  TouchableOpacity
+} from "react-native";
+import { searchRecipes } from "../../db/recipes";
+import { getImage } from "../../db/images";
 
-export default class Search extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const { params = {} } = navigation.state;
-    return {
-      header: null,
-      headerLeft: null,
-      headerRight: null,
-    };
+export default function Search({ navigation }) {
+  const [searchValue, onChangeSearch] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+
+  const renderItem = ({ item }) => {
+    console.log(item);
+    return (
+      <TouchableOpacity
+        style={styles.searchResult}
+        onPress={() => {
+          navigation.navigate("DisplayRecipe", {
+            recipe: item,
+          });
+        }}
+      >
+        <Text style={styles.resultText}>{item.title}</Text>
+        <View>
+          <Image style={styles.resultImage} source={{ uri: item.imageUrl }} />
+        </View>
+      </TouchableOpacity>
+    );
   };
 
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {}
-
-  render() {
-    return (
-      <View style={styles.messagesView}>
-        <ScrollView>
-          <View
-            pointerEvents="box-none"
-            style={{
-              position: "absolute",
-              alignSelf: "center",
-              top: 400,
-              bottom: 50,
-              justifyContent: "center",
-            }}
-          ></View>
-        </ScrollView>
-
-        <View
-          pointerEvents="box-none"
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 50,
-            bottom: 1,
-            alignItems: "flex-end",
+  return (
+    <View>
+      <View style={styles.searchGroup}>
+        <TextInput
+          style={styles.searchBar}
+          onChangeText={onChangeSearch}
+          value={searchValue}
+          placeholder={"Search here"}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            if (searchValue != null) {
+              recipes(searchValue)
+                .then(results => {
+                  setSearchResults(results)
+                  setLoaded(true)
+                })
+            }
           }}
         >
-          <View style={styles.searchgroupView}>
-            <View style={styles.rectangleView} />
-            <View
-              style={{
-                flex: 1,
-              }}
-            />
-            <Image
-              source={require("./../../assets/images/-icon-olor-2.png")}
-              style={styles.iconСolorImage}
-            />
-          </View>
-          <View
-            style={{
-              flex: 1,
-            }}
-          />
-          <View style={styles.navbarView}>
-            <View
-              pointerEvents="box-none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 13,
-                height: 94,
-              }}
-            >
-              <View
-                pointerEvents="box-none"
-                style={{
-                  position: "absolute",
-                  left: 36,
-                  right: 45,
-                  top: 22,
-                  height: 49,
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                }}
-              ></View>
-            </View>
-          </View>
-        </View>
+          <Ionicons
+            name={"search-circle"}
+            color={"black"}
+            size={60}
+          ></Ionicons>
+        </TouchableOpacity>
       </View>
-    );
-  }
+
+      {loaded && <View style={styles.searchResultsGroup}>
+        <FlatList
+          data={searchResults}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}>
+        </FlatList>
+      </View>}
+
+    </View>
+  );
 }
 
+async function recipes(search) {
+  var recs = await searchRecipes(search);
+  var recipesDone = await Promise.all(
+    recs.map(async function (recipe) {
+      var url = await getImage(recipe.imagePath);
+      recipe.imageUrl = url;
+      return recipe;
+    })
+  );
+  return recipesDone;
+}
+
+
 const styles = StyleSheet.create({
+  searchGroup: {
+    alignSelf: "center",
+    marginTop: 40,
+    flexDirection: "row",
+    marginBottom: 40,
+  },
+  searchBar: {
+    fontSize: 32,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "rgba(79, 98, 192, 0.15)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    marginLeft: "5%",
+    marginRight: "2%",
+    width: "70%",
+    minHeight: "8%",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    alignSelf: "center",
+  },
+  searchResultsGroup: {
+    alignSelf: "center",
+    alignItems: "center",
+    width: "100%",
+    paddingBottom: "10%",
+  },
+  searchResult: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    alignItems: "center",
+    height: 100,
+    width: "100%",
+    marginBottom: 20,
+    flexDirection: "row",
+  },
+  resultText: {
+    fontSize: 16,
+    textAlign: "left",
+    marginLeft: 20,
+    lineHeight: 25,
+    flexWrap: "wrap",
+  },
+  resultImage: {
+    resizeMode: "contain",
+    height: 80,
+    width: 80,
+    marginLeft: 20,
+    marginRight: 20,
+  },
   messagesView: {
     backgroundColor: "rgb(249, 250, 250)",
     flex: 1,
@@ -122,29 +173,6 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     textAlign: "center",
     lineHeight: 25,
-    width: 310,
-  },
-  rectangle4View: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    height: 147,
-    marginLeft: 2,
-    marginRight: 2,
-    marginTop: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textTwoText: {
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    backgroundColor: "transparent",
     width: 310,
   },
   rectangle3View: {
