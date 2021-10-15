@@ -1,98 +1,60 @@
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-// import firestore from "@react-native-firebase/firestore";
+import { useState, useEffect } from "react";
+import {
+  Image,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  Text,
+  View,
+} from "react-native";
 
-export default class Search extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const { params = {} } = navigation.state;
-    return {
-      header: null,
-      headerLeft: null,
-      headerRight: null,
-    };
-  };
+export default function Search() {
+  const [searchValue, onChangeSearch] = useState(null);
 
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {}
-
-  render() {
+  function showSearch() {
     return (
-      <View style={styles.messagesView}>
-        <ScrollView>
-          <View
-            pointerEvents="box-none"
-            style={{
-              position: "absolute",
-              alignSelf: "center",
-              top: 400,
-              bottom: 50,
-              justifyContent: "center",
-            }}
-          ></View>
-        </ScrollView>
-
-        <View
-          pointerEvents="box-none"
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 50,
-            bottom: 1,
-            alignItems: "flex-end",
-          }}
-        >
-          <View style={styles.searchgroupView}>
-            <View style={styles.rectangleView} />
-            <View
-              style={{
-                flex: 1,
-              }}
-            />
-            <Image
-              source={require("./../../assets/images/-icon-olor-2.png")}
-              style={styles.iconСolorImage}
-            />
-          </View>
-          <View
-            style={{
-              flex: 1,
-            }}
-          />
-          <View style={styles.navbarView}>
-            <View
-              pointerEvents="box-none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 13,
-                height: 94,
-              }}
-            >
-              <View
-                pointerEvents="box-none"
-                style={{
-                  position: "absolute",
-                  left: 36,
-                  right: 45,
-                  top: 22,
-                  height: 49,
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                }}
-              ></View>
-            </View>
-          </View>
-        </View>
-      </View>
+      <TextInput
+        style={styles.titleField}
+        onChangeText={onChangeSearch(value)}
+        placeholder={"Search here"}
+      />
     );
   }
 }
 
+const renderItem = ({ title }) => {
+  return (
+    <View
+      style={styles.rectangle4View}
+      onPress={() => {
+        setSelectedId(item.id);
+        navigation.navigate("DisplayRecipe", {
+          recipe: title,
+        });
+      }}
+    >
+      <Text style={styles.textTwoText}>{title}</Text>
+    </View>
+  );
+};
+
+const onChangeSearch = async (search) => {
+  const values = firebase
+    .firestore()
+    .collection("recipes")
+    .where("title", "==", value);
+
+  <FlatList>
+    numColumns={1}
+    data={values}
+    renderItem={renderItem}
+    keyExtractor=
+  </FlatList>;
+
+  console.log(values);
+};
 const styles = StyleSheet.create({
   messagesView: {
     backgroundColor: "rgb(249, 250, 250)",
