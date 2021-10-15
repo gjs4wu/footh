@@ -32,7 +32,7 @@ export default class Profile extends React.Component {
           }}
         >
           <Image
-            source={require("./../../assets/images/bitmap-copy@2x.png")}
+            source={require("./../../assets/images/bitmap-copy.png")}
             style={styles.rectangleImage}
           />
           <View
@@ -94,7 +94,7 @@ export default class Profile extends React.Component {
           <View style={styles.pgroupView}>
             <View style={styles.p1View}>
               <Image
-                source={require("./../../assets/images/bitmap-copy@2x.png")}
+                source={require("./../../assets/images/bitmap-copy.png")}
                 style={styles.bitmapCopyImage}
               />
               <View
@@ -149,7 +149,7 @@ export default class Profile extends React.Component {
                   }}
                 >
                   <Image
-                    source={require("./../../assets/images/bitmap@2x.png")}
+                    source={require("./../../assets/images/bitmap.png")}
                     style={styles.bitmapImage}
                   />
                   <Text style={styles.textText}>$20</Text>
@@ -158,7 +158,7 @@ export default class Profile extends React.Component {
             </View>
             <View style={styles.p2View}>
               <Image
-                source={require("./../../assets/images/bitmap-copy@2x.png")}
+                source={require("./../../assets/images/bitmap-copy.png")}
                 style={styles.bitmapCopyTwoImage}
               />
               <View
@@ -213,7 +213,7 @@ export default class Profile extends React.Component {
                   }}
                 >
                   <Image
-                    source={require("./../../assets/images/bitmap@2x.png")}
+                    source={require("./../../assets/images/bitmap.png")}
                     style={styles.bitmapTwoImage}
                   />
                   <Text style={styles.textTwoText}>$20</Text>
@@ -227,7 +227,7 @@ export default class Profile extends React.Component {
             />
             <View style={styles.p3View}>
               <Image
-                source={require("./../../assets/images/bitmap-copy@2x.png")}
+                source={require("./../../assets/images/bitmap-copy.png")}
                 style={styles.bitmapCopyThreeImage}
               />
               <View
@@ -282,7 +282,7 @@ export default class Profile extends React.Component {
                   }}
                 >
                   <Image
-                    source={require("./../../assets/images/bitmap@2x.png")}
+                    source={require("./../../assets/images/bitmap.png")}
                     style={styles.bitmapThreeImage}
                   />
                   <Text style={styles.textThreeText}>$20</Text>

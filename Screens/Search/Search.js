@@ -1,5 +1,6 @@
 import React from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+// import firestore from "@react-native-firebase/firestore";
 
 export default class Search extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -30,39 +31,7 @@ export default class Search extends React.Component {
               bottom: 50,
               justifyContent: "center",
             }}
-          >
-            <View style={styles.contentView}>
-              <View style={styles.rectangle5View}>
-                <Text style={styles.textText}>
-                  正文{"\n"}茄子wdnmd 可乐鸡汤法力无边 A1高闪来一个好不好秋梨膏
-                  我起了一枪秒了 发把狙
-                </Text>
-              </View>
-              <View style={styles.rectangle4View}>
-                <Text style={styles.textTwoText}>
-                  正文{"\n"}茄子wdnmd 可乐鸡汤法力无边 A1高闪来一个好不好秋梨膏
-                  我起了一枪秒了 发把狙
-                </Text>
-              </View>
-              <View style={styles.rectangle3View}>
-                <Text style={styles.textThreeText}>
-                  正文{"\n"}茄子wdnmd 可乐鸡汤法力无边 A1高闪来一个好不好秋梨膏
-                  我起了一枪秒了 发把狙
-                </Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                }}
-              />
-              <View style={styles.rectangle2View}>
-                <Text style={styles.textFourText}>
-                  正文{"\n"}茄子wdnmd 可乐鸡汤法力无边 A1高闪来一个好不好秋梨膏
-                  我起了一枪秒了 发把狙
-                </Text>
-              </View>
-            </View>
-          </View>
+          ></View>
         </ScrollView>
 
         <View
@@ -84,7 +53,7 @@ export default class Search extends React.Component {
               }}
             />
             <Image
-              source={require("./../../assets/images/-icon-olor-2@2x.png")}
+              source={require("./../../assets/images/-icon-olor-2.png")}
               style={styles.iconСolorImage}
             />
           </View>
