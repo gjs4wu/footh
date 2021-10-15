@@ -31,6 +31,31 @@ export async function getRecipe(recipeId) {
   return data;
 }
 
+export async function searchRecipes(search) {
+  const snapshot = await firebase
+    .firestore()
+    .collection("recipes").get();
+  const recipes = snapshot.docs.map(doc => {
+    var data = doc.data();
+    data.id = doc.id;
+    return data;
+  }).filter(r => r.title.toLowerCase().includes(search.trim().toLowerCase())
+  )
+  return recipes;
+}
+
+export async function getUserRecipes() {
+  const userId = firebase.auth().currentUser.uid;
+  console.log(userId);
+  const recipesSnapshot = await firebase.firestore().collection("recipes").where("author", "==", userId).get();
+  const recipes = recipesSnapshot.docs.map((doc) => {
+    var data = doc.data();
+    data.id = doc.id;
+    return data;
+  });
+  return recipes;
+}
+
 export function uploadRecipe(
   title,
   imagePath,
