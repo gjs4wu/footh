@@ -30,6 +30,13 @@ export default function DisplayRecipe({ navigation, route }) {
     };
   });
 
+  const tags = recipe.tags ? recipe.tags.map((tag) => {
+    return {
+      tag,
+      key: nanoid(8),
+    }
+  }) : [];
+
   const [imageRatio, setImageRatio] = useState(null);
   Image.getSize(recipe.imageUrl, (width, height) => {
     setImageRatio(height / width);
@@ -53,6 +60,19 @@ export default function DisplayRecipe({ navigation, route }) {
         <View style={styles.titleView}>
           <Text style={styles.titleText}>{recipe.title}</Text>
         </View>
+        {(tags.length != 0) &&
+          <View style={{marginLeft: "5%"}}>
+            <FlatList
+              horizontal={true}
+              data={tags}
+              keyExtractor={(item) => item.key}
+              renderItem={({ item }) => (
+                <View style={styles.tagBox}>
+                  <Text style={styles.tag}>{item.tag}</Text>
+                </View>
+              )}
+            />
+          </View>}
         <View style={styles.ingredientsView}>
           <Text style={styles.ingredientsTitle}>Ingredients: </Text>
           <FlatList
@@ -136,4 +156,20 @@ const styles = StyleSheet.create({
   directionsText: {
     fontSize: 18,
   },
+  tagBox: {
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    borderRadius: 3,
+    shadowColor: "rgba(0, 0, 0, 0.05)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    height: 40,
+    marginRight: 10,
+    padding: 5,
+  },
+  tag: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  }
 });
