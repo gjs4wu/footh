@@ -90,7 +90,6 @@ function Tabs() {
         component={NewRecipe}
         options={{ title: "New Recipe" }}
       />
-      <Tab.Screen name="Profile" component={Profile} />
       <Tab.Screen
         name="DisplayRecipe"
         component={DisplayRecipe}
