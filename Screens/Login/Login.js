@@ -68,7 +68,7 @@ function LoginFields(props) {
 async function sendLogin(email, password, navigation) {
   const res = await signIn(email, password);
   if (res) {
-    return navigation.push("Tabs");
+    return navigation.navigate("Tabs");
   } else {
     return null;
   }

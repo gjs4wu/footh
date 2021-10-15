@@ -25,7 +25,7 @@ export async function uploadImage(uri) {
     xhr.send(null);
   });
 
-  var uid =uuid.v4()
+  var uid = uuid.v4();
 
   const ref = firebase
     .storage()

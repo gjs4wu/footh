@@ -7,6 +7,7 @@ import Search from "./Screens/Search/Search";
 import Login from "./Screens/Login/Login";
 import Signup from "./Screens/Signup/Signup";
 import LoginSignup from "./Screens/Login-Signup/Login-Signup";
+import DisplayRecipe from "./Screens/DisplayRecipe/DisplayRecipe";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
@@ -68,8 +69,8 @@ function Tabs() {
           } else if (route.name === "Search") {
             iconName = focused ? "search" : "search-outline";
           } else if (route.name === "Post1") {
-            iconName = "ios-send";
-          } else if (route.name === "New Recipe") {
+            iconName = focused ? "grid" : "grid-outline";
+          } else if (route.name === "NewRecipe") {
             iconName = focused ? "add-circle" : "add-circle-outline";
           }
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -84,9 +85,22 @@ function Tabs() {
         options={({ navigation }) => ({})}
       />
       <Tab.Screen name="Search" component={Search} />
-      <Tab.Screen name="New Recipe" component={NewRecipe} />
+      <Tab.Screen
+        name="NewRecipe"
+        component={NewRecipe}
+        options={{ title: "New Recipe" }}
+      />
       <Tab.Screen name="Post1" component={Post1} />
       <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen
+        name="DisplayRecipe"
+        component={DisplayRecipe}
+        options={{
+          headerShown: false,
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
     </Tab.Navigator>
   );
 }

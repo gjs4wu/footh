@@ -21,6 +21,16 @@ export async function getRecipes() {
     .map(({ recipe }) => recipe);
 }
 
+export async function getRecipe(recipeId) {
+  const recipesSnapshot = await firebase
+    .firestore()
+    .collection("recipes")
+    .doc(recipeId)
+    .get();
+  var data = recipesSnapshot.data();
+  return data;
+}
+
 export function uploadRecipe(
   title,
   imagePath,
@@ -30,7 +40,7 @@ export function uploadRecipe(
 ) {
   const firestore = firebase.firestore();
   const currentUser = firebase.auth().currentUser;
-  const uid = nanoid(12);
+  const uid = nanoid(20);
   tagList = tagList.filter((e) => e.selected).map((e) => e.tag);
   ingredientList = ingredientList.map((e) => e.ingredient);
 
@@ -40,9 +50,10 @@ export function uploadRecipe(
     .set({
       title,
       imagePath,
-      ingredientList,
+      ingredients: ingredientList,
       directions,
       upvotes: 0,
+      tags: tagList,
       author: currentUser.uid,
     })
     .catch((error) => console.log(error));

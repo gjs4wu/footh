@@ -168,11 +168,13 @@ export default function NewRecipe() {
             />
             <TouchableOpacity
               onPress={() => {
-                var current = currentIngredients;
-                var id = nanoid(12);
-                current.push({ ingredient, id });
-                setCurrentIngredients(current);
-                onAddIngredient(null);
+                if (ingredient != null) {
+                  var current = currentIngredients;
+                  var id = nanoid(12);
+                  current.push({ ingredient, id });
+                  setCurrentIngredients(current);
+                  onAddIngredient(null);
+                }
               }}
               style={styles.addIngredientButton}
             >
@@ -204,6 +206,7 @@ export default function NewRecipe() {
           <View style={styles.directionsField}>
             <TextInput
               multiline
+              numberOfLines={6}
               style={styles.directionsFieldText}
               onChangeText={onChangeDirections}
               value={directions}
@@ -225,17 +228,39 @@ export default function NewRecipe() {
         <View style={styles.postView}>
           <TouchableOpacity
             onPress={async () => {
-              console.log(image);
-              var imagePath = image ? await uploadImage(image) : null;
-              uploadRecipe(
-                title,
-                imagePath,
-                currentIngredients,
-                directions,
-                tags
-              );
-              resetState();
-              Alert.alert("Recipe Created!")
+              if (
+                image != null &&
+                title != null &&
+                directions != null &&
+                currentIngredients.length != 0
+              ) {
+                var imagePath = image ? await uploadImage(image) : null;
+                uploadRecipe(
+                  title,
+                  imagePath,
+                  currentIngredients,
+                  directions,
+                  tags
+                );
+                resetState();
+                Alert.alert("Recipe Created!");
+              } else {
+                var str = "";
+                if (image == null) {
+                  str += "image, ";
+                }
+                if (title == null) {
+                  str += "title, ";
+                }
+                if (directions == null) {
+                  str += "title, ";
+                }
+                if (currentIngredients.length == 0) {
+                  str += "ingredients, ";
+                }
+                str = str.slice(0, str.length - 2);
+                Alert.alert("Missing required field(s): " + str);
+              }
             }}
           >
             <Text style={styles.postText}>Publish</Text>
@@ -258,6 +283,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 24,
     marginLeft: "10%",
+    marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
   },
@@ -283,6 +309,7 @@ const styles = StyleSheet.create({
   ingredientsText: {
     fontSize: 20,
     marginLeft: "10%",
+    marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
   },
@@ -299,7 +326,6 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     shadowOpacity: 1,
     width: "70%",
-    minHeight: "8%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
   },
@@ -307,8 +333,6 @@ const styles = StyleSheet.create({
     marginLeft: "3%",
     alignContent: "center",
     justifyContent: "center",
-    minHeight: "5%",
-    minWidth: "5%",
   },
   listIngredient: {
     backgroundColor: "white",
@@ -335,19 +359,23 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     height: "10%",
+    marginBottom: 20,
   },
   tagsText: {
     fontSize: 20,
     marginLeft: "3%",
+    marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
   },
   directionsGroup: {
     alignItems: "flex-start",
+    marginBottom: 30,
   },
   directionsText: {
     fontSize: 20,
     marginLeft: "10%",
+    marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
   },
@@ -359,8 +387,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     alignSelf: "center",
     width: "85%",
-    minHeight: "20%",
-    maxHeight: "50%",
+    minHeight: "10%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
   },

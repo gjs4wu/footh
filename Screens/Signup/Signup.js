@@ -75,7 +75,7 @@ function SignupFields(props) {
 async function sendSignup(email, password, name, navigation) {
   const res = await registration(email, password, name);
   if (res) {
-    return navigation.push("Tabs");
+    return navigation.navigate("Tabs");
   } else {
     return null;
   }

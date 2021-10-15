@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import screenSize from "../../constants/layout";
 import { getRecipes } from "../../db/recipes";
 import { getImage } from "../../db/images";
@@ -13,69 +13,52 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default class Home extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const { params = {} } = navigation.state;
-    return {
-      header: null,
-      headerLeft: null,
-      headerRight: null,
-    };
+export default function Home({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [data, setData] = useState([]);
+
+  const renderItem = ({ item }) => {
+    return (
+      <Item
+        item={item}
+        onPress={() => {
+          setSelectedId(item.id);
+          navigation.navigate("DisplayRecipe", {
+            recipe: item,
+          });
+        }}
+        image={item.imageUrl}
+      />
+    );
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedId: null,
-      dataLoaded: false,
-      data: [],
-    };
-  }
-
-  componentDidMount() {
-    this.getRecipes();
-  }
-
-  async getRecipes() {
-    var recipeData = await recipes();
-    this.setState({ dataLoaded: true, data: recipeData });
-  }
-
-  render() {
-    if (!this.state.dataLoaded) {
-      return (
-        <AppLoading
-          startAsync={this.getRecipes()}
-          onFinish={() => {
-            this.state.dataLoaded = true;
-          }}
-          onError={() => {}}
-        />
-      );
-    }
-    const renderItem = ({ item }) => {
-      return (
-        <Item
-          item={item}
-          onPress={() => {
-            this.state.selectedId = item.id;
-          }}
-          image={item.imageUrl}
-        />
-      );
-    };
+  if (!dataLoaded) {
     return (
-      <View style={styles.container}>
-        <FlatList
-          data={this.state.data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          extraData={this.state.selectedId}
-          numColumns={2}
-        />
-      </View>
+      <AppLoading
+        startAsync={async () => {
+          var recipeData = await recipes();
+          setData(recipeData);
+        }}
+        onFinish={() => {
+          setDataLoaded(true); 
+        }}
+        onError={() => {}}
+      />
     );
   }
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        extraData={selectedId}
+        numColumns={2}
+      />
+    </View>
+  );
 }
 
 const Item = ({ item, onPress, image }) => {
