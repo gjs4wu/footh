@@ -45,13 +45,14 @@ const onChangeSearch = async (search) => {
     .firestore()
     .collection("recipes")
     .where("title", "==", value);
-
-  <FlatList>
-    numColumns={1}
-    data={values}
-    renderItem={renderItem}
-    keyExtractor=
-  </FlatList>;
+  return (
+    <FlatList>
+      numColumns={1}
+      data={values}
+      renderItem={renderItem}
+      keyExtractor=
+    </FlatList>
+  );
 
   console.log(values);
 };
