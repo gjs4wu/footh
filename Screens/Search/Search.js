@@ -1,61 +1,125 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React from "react"
+import { useState, useEffect } from "react"
+import Ionicons from "react-native-vector-icons/Ionicons"
 import {
+  LogBox,
   Image,
   TextInput,
   StyleSheet,
   FlatList,
   Text,
   View,
-  TouchableOpacity
-} from "react-native";
-import { searchRecipes } from "../../db/recipes";
-import { getImage } from "../../db/images";
+  TouchableOpacity,
+  TouchableHighlight,
+} from "react-native"
+import { searchRecipesByTitle, searchRecipesByIngredients, searchRecipesByTags } from "../../db/recipes"
+import { getImage } from "../../db/images"
+import layout from "../../constants/layout"
 
 export default function Search({ navigation }) {
-  const [searchValue, onChangeSearch] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [searchValue, onChangeSearch] = useState(null)
+  const [searchResults, setSearchResults] = useState([])
+  const [loaded, setLoaded] = useState(false)
+  const [searchTitle, setSearchTitle] = useState(true)
+  const [searchIngredients, setSearchIngredients] = useState(false)
+  const [searchTags, setSearchTags] = useState(false)
 
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+  }, [])
 
   const renderItem = ({ item }) => {
-    console.log(item);
     return (
       <TouchableOpacity
         style={styles.searchResult}
         onPress={() => {
           navigation.navigate("DisplayRecipe", {
             recipe: item,
-          });
+          })
         }}
       >
         <Text style={styles.resultText}>{item.title}</Text>
-        <View>
-          <Image style={styles.resultImage} source={{ uri: item.imageUrl }} />
-        </View>
+        <Image style={styles.resultImage} source={{ uri: item.imageUrl }} />
       </TouchableOpacity>
-    );
-  };
+    )
+  }
+
+  const recipes = async (search) => {
+    var titleRecipes, ingredientRecipes, tagRecipes
+    if (searchTitle) {
+      titleRecipes = await searchRecipesByTitle(search)
+    } else if (!searchTitle && !searchIngredients && !searchTags) {
+      setSearchTitle(true)
+      titleRecipes = await searchRecipesByTitle(search)
+    } else {
+      titleRecipes = []
+    }
+    ingredientRecipes = searchIngredients ? await searchRecipesByIngredients(search) : []
+    tagRecipes = searchTags ? await searchRecipesByTags(search) : []
+
+    var recs = []
+
+    titleRecipes.forEach(r => {
+      var found = false
+      recs.forEach(s => {
+        if (r.id === s.id) {
+          found = true
+        }
+      })
+      if (!found) {
+        recs.push(r)
+      }
+    })
+    ingredientRecipes.forEach(r => {
+      var found = false
+      recs.forEach(s => {
+        if (r.id === s.id) {
+          found = true
+        }
+      })
+      if (!found) {
+        recs.push(r)
+      }
+    })
+    tagRecipes.forEach(r => {
+      var found = false
+      recs.forEach(s => {
+        if (r.id === s.id) {
+          found = true
+        }
+      })
+      if (!found) {
+        recs.push(r)
+      }
+    })
+
+    var recipesDone = await Promise.all(
+      recs.map(async function (recipe) {
+        var url = await getImage(recipe.imagePath)
+        recipe.imageUrl = url
+        return recipe
+      })
+    )
+    return recipesDone
+  }
 
   return (
     <View>
       <View style={styles.searchGroup}>
         <TextInput
           style={styles.searchBar}
+          placeholderStyle={styles.searchBar}
           onChangeText={onChangeSearch}
           value={searchValue}
-          placeholder={"Search here"}
+          placeholder={"Search"}
         />
         <TouchableOpacity
           onPress={() => {
-            if (searchValue != null) {
-              recipes(searchValue)
-                .then(results => {
-                  setSearchResults(results)
-                  setLoaded(true)
-                })
-            }
+            recipes(searchValue)
+              .then(results => {
+                setSearchResults(results)
+                setLoaded(true)
+              })
           }}
         >
           <Ionicons
@@ -64,6 +128,45 @@ export default function Search({ navigation }) {
             size={60}
           ></Ionicons>
         </TouchableOpacity>
+      </View>
+
+      <Text style={{ marginLeft: "10%", fontFamily: ".Montserrat-Regular" }}>
+        Include results from:
+      </Text>
+      <View style={styles.buttonGroup}>
+        <TouchableHighlight
+          style={
+            searchTitle ? styles.searchPressed : styles.searchUnpressed
+          }
+          onPress={() => {
+            setSearchTitle(searchTitle ? false : true)
+          }}
+          underlayColor={"#ff8c2b"}
+        >
+          <Text style={searchTitle ? styles.searchTextPressed : styles.searchTextUnpressed}>Title</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={
+            searchIngredients ? styles.searchPressed : styles.searchUnpressed
+          }
+          onPress={() => {
+            setSearchIngredients(searchIngredients ? false : true)
+          }}
+          underlayColor={"#ff8c2b"}
+        >
+          <Text style={searchIngredients ? styles.searchTextPressed : styles.searchTextUnpressed}>Ingredients</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={
+            searchTags ? styles.searchPressed : styles.searchUnpressed
+          }
+          onPress={() => {
+            setSearchTags(searchTags ? false : true)
+          }}
+          underlayColor={"#ff8c2b"}
+        >
+          <Text style={searchTags ? styles.searchTextPressed : styles.searchTextUnpressed}>Tags</Text>
+        </TouchableHighlight>
       </View>
 
       {loaded && <View style={styles.searchResultsGroup}>
@@ -75,30 +178,18 @@ export default function Search({ navigation }) {
       </View>}
 
     </View>
-  );
+  )
 }
-
-async function recipes(search) {
-  var recs = await searchRecipes(search);
-  var recipesDone = await Promise.all(
-    recs.map(async function (recipe) {
-      var url = await getImage(recipe.imagePath);
-      recipe.imageUrl = url;
-      return recipe;
-    })
-  );
-  return recipesDone;
-}
-
 
 const styles = StyleSheet.create({
   searchGroup: {
     alignSelf: "center",
     marginTop: 40,
     flexDirection: "row",
-    marginBottom: 40,
+    marginBottom: 10,
   },
   searchBar: {
+    fontFamily: ".Basic",
     fontSize: 32,
     padding: 10,
     backgroundColor: "white",
@@ -114,276 +205,88 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     alignSelf: "center",
   },
+  buttonGroup: {
+    flexDirection: "row",
+    marginTop: 10,
+    marginLeft: "10%",
+    marginBottom: "5%",
+    maxWidth: "80%",
+  },
   searchResultsGroup: {
     alignSelf: "center",
     alignItems: "center",
-    width: "100%",
-    paddingBottom: "10%",
+    maxWidth: "90%",
+    maxHeight: "75%",
   },
   searchResult: {
+    flex: 1,
     backgroundColor: "white",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E0E0E0",
     alignItems: "center",
-    height: 100,
-    width: "100%",
-    marginBottom: 20,
+    height: 160,
+    maxWidth: "99%",
+    marginBottom: "5%",
     flexDirection: "row",
   },
   resultText: {
-    fontSize: 16,
+    fontSize: 24,
+    fontFamily: ".Montserrat-Regular",
     textAlign: "left",
-    marginLeft: 20,
+    marginLeft: "5%",
     lineHeight: 25,
+    width: "50%",
     flexWrap: "wrap",
   },
   resultImage: {
-    resizeMode: "contain",
-    height: 80,
-    width: 80,
-    marginLeft: 20,
-    marginRight: 20,
-  },
-  messagesView: {
-    backgroundColor: "rgb(249, 250, 250)",
-    flex: 1,
-  },
-  contentView: {
-    backgroundColor: "transparent",
-    width: 365,
-    height: 663,
-  },
-  rectangle5View: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    height: 147,
-    marginRight: 4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    width: 310,
-  },
-  rectangle3View: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    height: 147,
-    marginLeft: 4,
-    marginTop: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textThreeText: {
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    backgroundColor: "transparent",
-    width: 310,
-  },
-  rectangle2View: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    height: 147,
-    marginRight: 4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textFourText: {
-    backgroundColor: "transparent",
-    color: "rgb(30, 30, 30)",
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "center",
-    lineHeight: 25,
-    width: 310,
-  },
-  searchgroupView: {
-    backgroundColor: "transparent",
-    width: 337,
-    height: 37,
-    marginRight: 35,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  rectangleView: {
-    backgroundColor: "white",
-    borderRadius: 14,
-    shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    width: 278,
-    height: 37,
-  },
-  iconСolorImage: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    width: 34,
-    height: 34,
-  },
-  navbarView: {
-    backgroundColor: "transparent",
-    alignSelf: "stretch",
-    height: 107,
-  },
-  barCopyView: {
-    backgroundColor: "white",
-    shadowColor: "rgba(155, 132, 135, 0.14)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 94,
-  },
-  homegroupView: {
-    backgroundColor: "transparent",
-    width: 22,
-    height: 48,
-  },
-  fill3View: {
-    backgroundColor: "rgb(35, 31, 32)",
-    position: "absolute",
-    left: 9,
-    right: 8,
-    top: 15,
-    height: 8,
-  },
-  fill4Image: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 24,
-  },
-  homeText: {
-    color: "rgb(135, 133, 154)",
-    fontSize: 11,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-    backgroundColor: "transparent",
-  },
-  mesgroupImage: {
-    backgroundColor: "transparent",
-    resizeMode: "center",
-    width: 31,
-    height: 46,
-    marginLeft: 56,
-  },
-  collgroupView: {
-    backgroundColor: "transparent",
-    width: 24,
-    height: 49,
-    marginRight: 64,
-  },
-  fill3TwoImage: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    position: "absolute",
-    left: 0,
-    right: 13,
-    top: 7,
-    height: 17,
-  },
-  fill5TwoImage: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    position: "absolute",
-    left: 1,
-    right: 0,
-    top: 0,
-    height: 10,
-  },
-  fill7Image: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    position: "absolute",
-    left: 13,
-    right: 0,
-    top: 7,
-    height: 17,
-  },
-  collText: {
-    color: "rgb(32, 61, 186)",
-    fontSize: 11,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-    backgroundColor: "transparent",
-    marginLeft: 2,
-  },
-  setgroupView: {
-    backgroundColor: "transparent",
-    width: 22,
-    height: 49,
-  },
-  fill3Image: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    width: null,
-    height: 11,
-    marginLeft: 6,
-    marginRight: 5,
-  },
-  fill5Image: {
-    backgroundColor: "transparent",
-    resizeMode: "center",
-    width: null,
-    height: 11,
-    marginLeft: 2,
-    marginRight: 1,
-    marginTop: 2,
-  },
-  setText: {
-    backgroundColor: "transparent",
-    color: "rgb(135, 133, 154)",
-    fontSize: 11,
-    fontStyle: "normal",
-    fontWeight: "normal",
-    textAlign: "left",
-  },
-  plusView: {
-    backgroundColor: "rgb(32, 61, 186)",
-    borderRadius: 29,
-    borderWidth: 3,
-    borderColor: "rgb(230, 233, 255)",
-    borderStyle: "solid",
-    position: "absolute",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    justifyContent: "flex-end",
     alignSelf: "center",
-    width: 58,
-    top: 0,
-    height: 58,
-    justifyContent: "center",
+    resizeMode: "stretch",
+    height: 130,
+    width: 130,
+    marginLeft: "5%",
+    marginRight: "5%",
+  },
+  searchPressed: {
+    flex: 1,
+    backgroundColor: "#ff8c2b",
     alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 3,
+    shadowColor: "rgba(0, 0, 0, 0.05)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    height: 40,
+    marginRight: 10,
+    padding: 5,
   },
-  plusCopyImage: {
-    backgroundColor: "transparent",
-    resizeMode: "center",
-    width: 17,
-    height: 17,
+  searchUnpressed: {
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 3,
+    shadowColor: "rgba(0, 0, 0, 0.05)",
+    shadowRadius: 20,
+    shadowOpacity: 1,
+    height: 40,
+    marginRight: 10,
+    padding: 5,
   },
-});
+  searchTextPressed: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+    fontFamily: ".Montserrat-Bold",
+  },
+  searchTextUnpressed: {
+    color: "#ff8c2b",
+    fontWeight: "bold",
+    fontSize: 16,
+    fontFamily: ".Montserrat-Regular",
+  }
+})

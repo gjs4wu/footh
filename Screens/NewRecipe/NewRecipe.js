@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import {
   StyleSheet,
   Text,
@@ -11,38 +11,50 @@ import {
   FlatList,
   TouchableHighlight,
   Alert,
-} from "react-native";
-import "react-native-get-random-values";
-import layout from "../../constants/layout";
-import initData from "../../constants/recipeData";
-import { nanoid } from "nanoid";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import * as ImagePicker from "expo-image-picker";
-import { uploadImage } from "../../db/images";
-import { uploadRecipe } from "../../db/recipes";
-const titles = initData.titlesList;
+} from "react-native"
+import "react-native-get-random-values"
+import layout from "../../constants/layout"
+import initData from "../../constants/recipeData"
+import { nanoid } from "nanoid"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import * as ImagePicker from "expo-image-picker"
+import { uploadImage } from "../../db/images"
+import { uploadRecipe } from "../../db/recipes"
+const titles = initData.titlesList
+const possibleIngredients = initData.ingredientsList
 
 export default function NewRecipe() {
-  const [tagKey, setTagKey] = useState(Math.random());
-  const [image, setImage] = useState(null);
-  const [title, onChangeTitle] = useState(null);
-  const [ingredient, onAddIngredient] = useState(null);
-  const [directions, onChangeDirections] = useState(null);
-  const [currentIngredients, setCurrentIngredients] = useState([]);
+  const [tagKey, setTagKey] = useState(Math.random())
+  const [image, setImage] = useState(null)
+  const [title, onChangeTitle] = useState(null)
+  const [servings, onChangeServings] = useState(null)
+  const [prepTime, onChangePrepTime] = useState(null)
+  const [cookTime, onChangeCookTime] = useState(null)
+  const [ingredient, onAddIngredient] = useState(null)
+  const [directions, onChangeDirections] = useState(null)
+  const [currentIngredients, setCurrentIngredients] = useState([])
   const [randomNum, setRandom] = useState(
-    Math.floor(Math.random() * titles.length)
-  );
-  const [tags, setTags] = useState(initData.tagsList);
+    Math.floor(Math.random() * 10000)
+  )
+  const [tags, setTags] = useState(initData.tagsList)
 
   function resetState() {
-    setTagKey(Math.random());
-    setImage(null);
-    onChangeTitle(null);
-    onAddIngredient(null);
-    onChangeDirections(null);
-    setCurrentIngredients([]);
-    setRandom(Math.floor(Math.random() * titles.length));
-    setTags(initData.tagsList);
+    setTagKey(Math.random())
+    setImage(null)
+    onChangeTitle(null)
+    onAddIngredient(null)
+    onChangeDirections(null)
+    setCurrentIngredients([])
+    setRandom(Math.floor(Math.random() * titles.length))
+    onChangeCookTime(null)
+    onChangePrepTime(null)
+    onChangeServings(null)
+    var resetTags = tags.map(t => {
+      t.selected = false
+      return t
+    })
+    console.log(resetTags)
+    setTags(resetTags)
   }
 
   function renderCurrentIngredient({ item }) {
@@ -51,18 +63,18 @@ export default function NewRecipe() {
         <Button
           title={item.ingredient}
           onPress={() => {
-            var newCurrent = currentIngredients.filter((ing) => ing !== item);
-            setCurrentIngredients(newCurrent);
+            var newCurrent = currentIngredients.filter((ing) => ing !== item)
+            setCurrentIngredients(newCurrent)
           }}
         />
       </View>
-    );
+    )
   }
 
   function renderTag({ item }) {
     var objIndex = tags.findIndex((e) => {
-      return e.tag == item.tag;
-    });
+      return e.tag == item.tag
+    })
     return (
       <View>
         <TouchableHighlight
@@ -71,13 +83,13 @@ export default function NewRecipe() {
             tags[objIndex].selected ? styles.listTagPressed : styles.listTag
           }
           onPress={() => {
-            var currentTags = tags;
+            var currentTags = tags
 
             currentTags[objIndex].selected = currentTags[objIndex].selected
               ? false
-              : true;
-            setTags(currentTags);
-            setTagKey(Math.random());
+              : true
+            setTags(currentTags)
+            setTagKey(Math.random())
           }}
           underlayColor={"#007AFF"}
         >
@@ -92,32 +104,32 @@ export default function NewRecipe() {
           </Text>
         </TouchableHighlight>
       </View>
-    );
+    )
   }
 
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
         const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+          await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
+          alert("Sorry, we need camera roll permissions to make this work!")
         }
       }
-    })();
-  }, []);
+    })()
+  }, [])
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
-    });
+    })
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      setImage(result.uri)
     }
-  };
+  }
 
   return (
     <View style={styles.screen}>
@@ -129,7 +141,7 @@ export default function NewRecipe() {
             style={styles.titleField}
             onChangeText={onChangeTitle}
             value={title}
-            placeholder={titles[randomNum]}
+            placeholder={titles[(randomNum % titles.length)]}
           />
         </View>
         <View style={styles.imagePicker}>
@@ -157,6 +169,36 @@ export default function NewRecipe() {
           </TouchableOpacity>
         </View>
 
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+          <View style={[styles.fieldGroup, {marginLeft: "7.5%"}]}>
+            <Text style={styles.fieldText}>Servings</Text>
+            <TextInput
+              style={styles.fields}
+              onChangeText={onChangeServings}
+              keyboardType={"numeric"}
+              value={servings}
+            />
+          </View>
+          <View style={[styles.fieldGroup, {marginLeft: "5%", marginRight: "5%"}]}>
+            <Text style={styles.fieldText}>Prep Time (min.)</Text>
+            <TextInput
+              style={styles.fields}
+              onChangeText={onChangePrepTime}
+              value={prepTime}
+              keyboardType={"numeric"}
+            />
+          </View>
+          <View style={[styles.fieldGroup, {marginRight: "7.5%"}]}>
+            <Text style={styles.fieldText}>Cook Time (min.)</Text>
+            <TextInput
+              style={styles.fields}
+              onChangeText={onChangeCookTime}
+              value={cookTime}
+              keyboardType={"numeric"}
+            />
+          </View>
+        </View>
+
         <View style={styles.ingredientsGroupView}>
           <Text style={styles.ingredientsText}>Add Ingredient</Text>
           <View style={styles.addIngredientsGroup}>
@@ -164,16 +206,16 @@ export default function NewRecipe() {
               style={styles.addIngredientsField}
               onChangeText={onAddIngredient}
               value={ingredient}
-              placeholder="2 cups of white rice"
+              placeholder={possibleIngredients[(randomNum % possibleIngredients.length)]}
             />
             <TouchableOpacity
               onPress={() => {
                 if (ingredient != null) {
-                  var current = currentIngredients;
-                  var id = nanoid(12);
-                  current.push({ ingredient, id });
-                  setCurrentIngredients(current);
-                  onAddIngredient(null);
+                  var current = currentIngredients
+                  var id = nanoid(12)
+                  current.push({ ingredient, id })
+                  setCurrentIngredients(current)
+                  onAddIngredient(null)
                 }
               }}
               style={styles.addIngredientButton}
@@ -188,11 +230,10 @@ export default function NewRecipe() {
           {currentIngredients.length != 0 && (
             <View style={styles.listIngredients}>
               <Text style={styles.listIngredientsText}>
-                Ingredients (tap to remove ingredient)
+                Ingredients (tap to remove)
               </Text>
               <FlatList
-                style={{ marginLeft: "10%" }}
-                horizontal={true}
+                style={{ marginTop: "2%", marginLeft: "7.5%", alignSelf: "left", maxWidth: "85%" }}
                 data={currentIngredients}
                 keyExtractor={(item) => item.id}
                 renderItem={renderCurrentIngredient}
@@ -234,32 +275,45 @@ export default function NewRecipe() {
                 directions != null &&
                 currentIngredients.length != 0
               ) {
-                var imagePath = image ? await uploadImage(image) : null;
+                var imagePath = image ? await uploadImage(image) : null
                 uploadRecipe(
                   title,
                   imagePath,
+                  servings,
+                  prepTime,
+                  cookTime,
                   currentIngredients,
                   directions,
                   tags
-                );
-                resetState();
-                Alert.alert("Recipe Created!");
+                )
+                resetState()
+                global.numRecipes++
+                Alert.alert("Recipe Created!")
               } else {
-                var str = "";
+                var str = ""
                 if (image == null) {
-                  str += "image, ";
+                  str += "image, "
                 }
                 if (title == null) {
-                  str += "title, ";
+                  str += "title, "
+                }
+                if (servings == null) {
+                  str += "servings, "
+                }
+                if (prepTime == null) {
+                  str += "prep time, "
+                }
+                if (cookTime == null) {
+                  str += "cook time, "
                 }
                 if (directions == null) {
-                  str += "title, ";
+                  str += "title, "
                 }
                 if (currentIngredients.length == 0) {
-                  str += "ingredients, ";
+                  str += "ingredients, "
                 }
-                str = str.slice(0, str.length - 2);
-                Alert.alert("Missing required field(s): " + str);
+                str = str.slice(0, str.length - 2)
+                Alert.alert("Missing required field(s): " + str)
               }
             }}
           >
@@ -268,7 +322,7 @@ export default function NewRecipe() {
         </View>
       </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -282,24 +336,48 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 24,
-    marginLeft: "10%",
+    marginLeft: "7.5%",
     marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
   },
   titleField: {
+    fontFamily: ".Basic",
     fontSize: 32,
     padding: 10,
     backgroundColor: "white",
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
     shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOpacity: 10,
     width: "85%",
-    minHeight: "8%",
+    minHeight: "6%",
+    alignSelf: "center",
+  },
+  fields: {
+    fontFamily: ".Basic",
+    fontSize: 30,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "rgba(79, 98, 192, 0.15)",
+    shadowRadius: 10,
+    shadowOpacity: 10,
+    width: "100%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     alignSelf: "center",
+  },
+  fieldText: {
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: ".Basic",
+    marginBottom: 5,
+  },
+  fieldGroup: {
+    flex: 1,
   },
   ingredientsGroupView: {
     width: "100%",
@@ -308,7 +386,7 @@ const styles = StyleSheet.create({
   },
   ingredientsText: {
     fontSize: 20,
-    marginLeft: "10%",
+    marginLeft: "7.5%",
     marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
@@ -319,12 +397,13 @@ const styles = StyleSheet.create({
   },
   addIngredientsField: {
     fontSize: 30,
+    fontFamily: ".Basic",
     padding: 10,
     backgroundColor: "white",
     borderRadius: 10,
     shadowColor: "rgba(79, 98, 192, 0.15)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOpacity: 10,
     width: "70%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
@@ -336,19 +415,24 @@ const styles = StyleSheet.create({
   },
   listIngredient: {
     backgroundColor: "white",
-    borderRadius: 3,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    shadowColor: "rgba(79, 98, 192, 0.15)",
+    shadowRadius: 10,
+    shadowOpacity: 10,
     height: 40,
     marginRight: 5,
-    marginTop: 1,
-    justifyContent: "flex-end",
+    marginTop: 2.5,
+    marginBottom: 2.5,
+    marginLeft: 5,
+    justifyContent: "center",
+    alignItems: "flex-start",
     fontSize: 6,
   },
   listIngredientsText: {
     fontSize: 20,
-    marginLeft: "10%",
+    marginLeft: "7.5%",
     fontFamily: ".Basic",
     textAlign: "left",
   },
@@ -358,12 +442,10 @@ const styles = StyleSheet.create({
   taggroupView: {
     width: "85%",
     alignSelf: "center",
-    height: "10%",
-    marginBottom: 20,
+    marginBottom: "10%",
   },
   tagsText: {
     fontSize: 20,
-    marginLeft: "3%",
     marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
@@ -374,7 +456,7 @@ const styles = StyleSheet.create({
   },
   directionsText: {
     fontSize: 20,
-    marginLeft: "10%",
+    marginLeft: "7.5%",
     marginBottom: 10,
     fontFamily: ".Basic",
     textAlign: "left",
@@ -382,9 +464,9 @@ const styles = StyleSheet.create({
   directionsField: {
     backgroundColor: "white",
     borderRadius: 10,
-    shadowColor: "rgba(0, 0, 0, 0.05)",
-    shadowRadius: 20,
-    shadowOpacity: 1,
+    shadowColor: "rgba(79, 98, 192, 0.15)",
+    shadowRadius: 10,
+    shadowOpacity: 10,
     alignSelf: "center",
     width: "85%",
     minHeight: "10%",
@@ -395,6 +477,7 @@ const styles = StyleSheet.create({
     color: "rgb(30, 30, 30)",
     padding: 10,
     fontSize: 18,
+    fontFamily: ".Basic",
     fontStyle: "normal",
     fontWeight: "normal",
     textAlign: "left",
@@ -443,8 +526,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     alignSelf: "center",
     width: "30%",
-    height: "6%",
-    marginBottom: "50%",
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginBottom: "20%",
     justifyContent: "center",
   },
   postText: {
@@ -459,4 +543,4 @@ const styles = StyleSheet.create({
     marginBottom: "5%",
     marginTop: "5%",
   },
-});
+})

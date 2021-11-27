@@ -1,7 +1,7 @@
-import React from "react";
-import screenSize from "../../constants/layout";
-import { registration } from "../../db/auth";
-import { useState } from "react";
+import React from "react"
+import screenSize from "../../constants/layout"
+import { registration } from "../../db/auth"
+import { useState } from "react"
 
 import {
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-} from "react-native";
+} from "react-native"
 
 export default function Signup({ navigation }) {
   return (
@@ -19,15 +19,15 @@ export default function Signup({ navigation }) {
       </Text>
       <SignupFields navigation={navigation}></SignupFields>
     </View>
-  );
+  )
 }
 
 function SignupFields(props) {
-  const { navigation } = props;
+  const { navigation } = props
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   return (
     <View style={styles.input_group}>
@@ -69,15 +69,15 @@ function SignupFields(props) {
         </Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
 
 async function sendSignup(email, password, name, navigation) {
-  const res = await registration(email, password, name);
+  const res = await registration(email, password, name)
   if (res) {
-    return navigation.navigate("Tabs");
+    return navigation.navigate("Tabs")
   } else {
-    return null;
+    return null
   }
 }
 
@@ -149,4 +149,4 @@ const styles = StyleSheet.create({
     fontFamily: ".Basic",
     fontSize: 30,
   },
-});
+})

@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import screenSize from "../../constants/layout";
-import { getRecipes } from "../../db/recipes";
-import { getImage } from "../../db/images";
-import AppLoading from "expo-app-loading";
+import React, { useState, useEffect } from "react"
+import screenSize from "../../constants/layout"
+import { getRecipes } from "../../db/recipes"
+import { getImage } from "../../db/images"
+import { StackActions } from '@react-navigation/native';
+import AppLoading from "expo-app-loading"
+import "../../constants/global"
+import { getFavorites } from "../../db/favorites";
 
 import {
   FlatList,
@@ -11,45 +14,53 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-} from "react-native";
+  LogBox,
+} from "react-native"
 
-export default function Home({ navigation }) {
-  const [selectedId, setSelectedId] = useState(null);
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const [data, setData] = useState([]);
+export default function Home({ navigation, route }) {
+  var date = route.params.date
+  const [selectedId, setSelectedId] = useState(null)
+  const [dataLoaded, setDataLoaded] = useState(false)
+  const [number, setNumber] = useState(global.numRecipes)
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+  }, [])
 
   const renderItem = ({ item }) => {
     return (
       <Item
         item={item}
         onPress={() => {
-          setSelectedId(item.id);
-          navigation.navigate("DisplayRecipe", {
-            recipe: item,
-          });
+          setSelectedId(item.id)
+          navigation.navigate("DisplayRecipe", { recipe: item })
         }}
         image={item.imageUrl}
       />
-    );
-  };
-
-  if (!dataLoaded) {
+    )
+  }
+  if (!dataLoaded || number != global.numRecipes) {
     return (
       <AppLoading
         startAsync={async () => {
-          var recipeData = await recipes();
-          setData(recipeData);
+          var recipeData = await recipes()
+          setData(recipeData)
+          var favs = await getFavorites()
+          global.favorites = favs
+          global.numRecipes = recipeData.length
         }}
         onFinish={() => {
-          setDataLoaded(true); 
+          setNumber(global.numRecipes)
+          setDataLoaded(true)
         }}
-        onError={() => {}}
+        onError={() => { }}
       />
-    );
+    )
   }
 
   return (
-    <View style={styles.container}>
+    <View key={date} style={styles.container}>
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -58,7 +69,7 @@ export default function Home({ navigation }) {
         numColumns={2}
       />
     </View>
-  );
+  )
 }
 
 const Item = ({ item, onPress, image }) => {
@@ -66,19 +77,12 @@ const Item = ({ item, onPress, image }) => {
     <TouchableOpacity onPress={onPress} style={[styles.item]}>
       <Image style={[styles.thumbnail]} source={{ uri: image }}></Image>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 async function recipes() {
-  var recs = await getRecipes();
-  var recipesDone = await Promise.all(
-    recs.map(async function (recipe) {
-      var url = await getImage(recipe.imagePath);
-      recipe.imageUrl = url;
-      return recipe;
-    })
-  );
-  return recipesDone;
+  var recs = await getRecipes()
+  return recs
 }
 
 const styles = StyleSheet.create({
@@ -96,4 +100,4 @@ const styles = StyleSheet.create({
     height: screenSize.window.width * 0.4,
     borderRadius: 10,
   },
-});
+})

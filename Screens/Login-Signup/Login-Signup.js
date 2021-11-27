@@ -1,5 +1,5 @@
-import React from "react";
-import screenSize from "../../constants/layout";
+import React from "react"
+import screenSize from "../../constants/layout"
 
 import {
   Image,
@@ -7,7 +7,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-} from "react-native";
+} from "react-native"
 
 export default function Login_Signup({ navigation }) {
   return (
@@ -36,7 +36,7 @@ export default function Login_Signup({ navigation }) {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -105,4 +105,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-});
+})

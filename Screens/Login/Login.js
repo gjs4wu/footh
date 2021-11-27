@@ -1,7 +1,7 @@
-import React from "react";
-import screenSize from "../../constants/layout";
-import { signIn } from "../../db/auth";
-import { useState } from "react";
+import React from "react"
+import screenSize from "../../constants/layout"
+import { signIn } from "../../db/auth"
+import { useState } from "react"
 
 import {
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-} from "react-native";
+} from "react-native"
 
 export default function Login({ navigation }) {
   return (
@@ -22,14 +22,14 @@ export default function Login({ navigation }) {
       </Text>
       <LoginFields navigation={navigation}></LoginFields>
     </View>
-  );
+  )
 }
 
 function LoginFields(props) {
-  const { navigation } = props;
+  const { navigation } = props
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   return (
     <View style={styles.input_group}>
@@ -62,15 +62,15 @@ function LoginFields(props) {
         </Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
 
 async function sendLogin(email, password, navigation) {
-  const res = await signIn(email, password);
+  const res = await signIn(email, password)
   if (res) {
-    return navigation.navigate("Tabs");
+    return navigation.navigate("Tabs")
   } else {
-    return null;
+    return null
   }
 }
 
@@ -142,4 +142,4 @@ const styles = StyleSheet.create({
     fontFamily: ".Basic",
     fontSize: 30,
   },
-});
+})
