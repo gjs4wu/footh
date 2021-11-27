@@ -34,11 +34,6 @@ function StartStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Tabs"
-        component={Tabs}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="LoginSignup"
         component={LoginSignup}
         options={{ title: "Welcome" }}
@@ -52,6 +47,11 @@ function StartStack() {
         name="Signup"
         component={Signup}
         options={{ title: "Sign Up" }}
+      />
+      <Stack.Screen
+        name="Tabs"
+        component={Tabs}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   )
