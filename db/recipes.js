@@ -102,7 +102,6 @@ export async function searchRecipesByTags(search) {
 }
 
 export async function getFavoriteRecipes() {
-  // var favorites = await getFavorites();
   var favorites = global.favorites
   var recipes = await Promise.all(favorites.map(async (f) => {
     var rec = (await firebase.firestore().collection("recipes").doc(f).get()).data()

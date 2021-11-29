@@ -1,5 +1,7 @@
 import React from "react"
 import screenSize from "../../constants/layout"
+import * as fb from "firebase"
+const firebase = fb.default
 
 import {
   Image,
@@ -10,6 +12,9 @@ import {
 } from "react-native"
 
 export default function Login_Signup({ navigation }) {
+  if(firebase.auth().currentUser != null){
+    navigation.navigate("Tabs")
+  }
   return (
     <View style={styles.login_signup}>
       <Image

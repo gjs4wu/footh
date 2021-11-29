@@ -1,4 +1,5 @@
 import uuid from "react-native-uuid"
+import { manipulateAsync } from 'expo-image-manipulator';
 import * as fb from "firebase"
 const firebase = fb.default
 
@@ -11,6 +12,12 @@ export async function getImage(imagePath) {
 }
 
 export async function uploadImage(uri) {
+  const resized = await manipulateAsync(
+    uri,
+    [{ resize: { width: 480} }],
+    { format: 'png', compress: 0.3}
+  );
+
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     xhr.onload = function () {
@@ -21,7 +28,7 @@ export async function uploadImage(uri) {
       reject(new TypeError("Network request failed"))
     }
     xhr.responseType = "blob"
-    xhr.open("GET", uri, true)
+    xhr.open("GET", resized.uri, true)
     xhr.send(null)
   })
 
