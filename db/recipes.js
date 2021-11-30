@@ -22,7 +22,7 @@ export async function getRecipes() {
     .sort((x, y) => x.sort - y.sort)
     .map(({ recipe }) => recipe)
 
-  var recipesDone = await getImageUrls(recipes)
+  var recipesDone = await getImageUrls(sorted)
   return recipesDone
 }
 
