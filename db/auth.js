@@ -7,12 +7,13 @@ export async function registration(email, password, displayName) {
     const userAuth = await firebase.auth().createUserWithEmailAndPassword(email, password)
     const currentUser = userAuth.user
     currentUser.updateProfile({
-      displayName
+      displayName,
     })
     const db = firebase.firestore()
     db.collection("users").doc(currentUser.uid).set({
       email: currentUser.email,
       displayName: displayName,
+      favorites: []
     })
     var success = true
   } catch (err) {
